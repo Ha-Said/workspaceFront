@@ -30,11 +30,7 @@ export function RegisterPage() {
       <div className=" text-white flex min-h-screen flex-col items-center pt-16 sm:justify-center sm:pt-0">
         <a href="/login">
           <div className="text-foreground font-semibold text-2xl tracking-tighter mx-auto flex items-center gap-2">
-            <div>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672Zm-7.518-.267A8.25 8.25 0 1 1 20.25 10.5M8.288 14.212A5.25 5.25 0 1 1 17.25 10.5" />
-              </svg>
-            </div>
+           
           </div>
         </a>
         <div className="relative mt-12 w-full max-w-lg sm:mt-10">
@@ -51,11 +47,7 @@ export function RegisterPage() {
                     <div className="group relative rounded-lg border focus-within:border-sky-200 px-3 pb-1.5 pt-2.5 duration-200 focus-within:ring focus-within:ring-sky-300/30">
                       <div className="flex justify-between">
                         <label className="text-xs font-medium text-muted-foreground group-focus-within:text-white text-gray-400">Username</label>
-                        <div className="absolute right-3 translate-y-2 text-green-200">
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-                            <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clipRule="evenodd" />
-                          </svg>
-                        </div>
+                        
                       </div>
                       <input type="text" name="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" autoComplete="off" className="block w-full border-0 bg-transparent p-0 text-sm file:my-1 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-medium placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 sm:leading-7 text-foreground" />
                     </div>
