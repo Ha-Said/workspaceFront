@@ -14,7 +14,8 @@ export function Header(){
               blur
             </span>
           </a>
-          <div className="flex w-1/2 justify-end content-center">
+          <div className="flex w-1/3 justify-end content-center">
+
             <Button name={"logout"} link={"/login"} />
           </div>
         </div>

@@ -13,7 +13,8 @@ import Link from '@mui/joy/Link';
 export  function SideBar() {
   const [open, setOpen] = React.useState(false);
   return (
-    <Box sx={{ width: 320, pl: '24px' }}>
+    <Box sx={{ width: '25%', pl: '24px' }}>
+
       <List
         size="sm"
         sx={(theme) => ({
@@ -58,7 +59,7 @@ export  function SideBar() {
           </List>
         </ListItem>
         <ListItem sx={{ '--List-gap': '0px' }}>
-          <ListItemButton><Link href="Calendar"> Calendar</Link></ListItemButton>
+          <ListItemButton><Link href="schedule"> Schedule</Link></ListItemButton>
         </ListItem>
         <ListItem
           nested

@@ -5,6 +5,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import{Landing} from './pages/landing'
 import { Dashboard } from './templates/Dashboard'
 import { Community } from './templates/community'
+
+import {CalendarApp} from "./components/Schedule"
 function Routing() {
 
   return (
@@ -19,6 +21,7 @@ function Routing() {
 
           <Route element={<Dashboard/>}>
           <Route path='/community' element={<Community/>}/>
+          <Route path='/schedule' element={<CalendarApp/>}/>
           </Route>
         </Routes>
       </Router> 
