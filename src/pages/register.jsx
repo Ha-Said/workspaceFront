@@ -26,7 +26,7 @@ export function RegisterPage() {
   };
 
   return (
-    <>
+    <div className='flex-auto'>
       <div className=" text-white flex min-h-screen flex-col items-center pt-16 sm:justify-center sm:pt-0">
         <a href="/login">
           <div className="text-foreground font-semibold text-2xl tracking-tighter mx-auto flex items-center gap-2">
@@ -101,6 +101,6 @@ export function RegisterPage() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

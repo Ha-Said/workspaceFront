@@ -18,7 +18,8 @@ const StyledWrapper = styled.div`
     font-size: 18px;
     color: #e1e1e1;
     font-family: inherit;
-    font-weight: 800;
+    font-weight: 600;
+
     cursor: pointer;
     position: relative;
     border: none;
@@ -53,4 +54,3 @@ const StyledWrapper = styled.div`
     transition-duration: 400ms;
     transition-property: width, left;
   }`;
-
