@@ -4,6 +4,7 @@ import { RegisterPage } from './pages/register'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import{Landing} from './pages/landing'
 import { Dashboard } from './templates/Dashboard'
+import { Community } from './templates/community'
 function Routing() {
 
   return (
@@ -15,7 +16,10 @@ function Routing() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/" element={<Landing />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+
+          <Route element={<Dashboard/>}>
+          <Route path='/community' element={<Community/>}/>
+          </Route>
         </Routes>
       </Router> 
       </div>

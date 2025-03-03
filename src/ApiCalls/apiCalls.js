@@ -10,3 +10,4 @@ export const registerUser = async (userData) => {
     throw error.response?.data || 'Registration failed'; 
   }
 };
+

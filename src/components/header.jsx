@@ -15,8 +15,7 @@ export function Header(){
             </span>
           </a>
           <div className="flex w-1/2 justify-end content-center">
-            <Button name={"login"} link={"/login"} />
-            <Button name={"register"} link={"/register"} />
+            <Button name={"logout"} link={"/login"} />
           </div>
         </div>
       </div>

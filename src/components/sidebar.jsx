@@ -48,17 +48,17 @@ export  function SideBar() {
           <ListItem component="div" startAction={<ReceiptLong />}>
             <Typography level="body-xs" sx={{ textTransform: 'uppercase', color: '#ffffff' }}>
 
-              Documentation
+              Management
             </Typography>
           </ListItem>
           <List sx={{ '--List-gap': '0px' }}>
             <ListItem>
-              <ListItemButton selected><Link> 123</Link></ListItemButton>
+              <ListItemButton selected><Link href="/community"> Community </Link></ListItemButton>
             </ListItem>
           </List>
         </ListItem>
         <ListItem sx={{ '--List-gap': '0px' }}>
-          <ListItemButton>Quick Start</ListItemButton>
+          <ListItemButton><Link href="Calendar"> Calendar</Link></ListItemButton>
         </ListItem>
         <ListItem
           nested
@@ -88,10 +88,7 @@ export  function SideBar() {
               ]}
 
             >
-              Tutorial
-            </Typography>
-            <Typography component="span" level="body-xs">
-              9
+              Rooms
             </Typography>
           </ListItem>
           {open && (
