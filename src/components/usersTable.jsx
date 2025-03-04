@@ -12,7 +12,7 @@ export function TableCard() {
   }, []);
 
   return (
-    <div className="relative overflow-x-auto">
+    <div className="relative overflow-x-auto rounded-lg ">
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-300 uppercase bg-gray-800 dark:bg-gray-800 dark:text-gray-300">
           <tr>
@@ -30,7 +30,12 @@ export function TableCard() {
         <tbody>
           {users.map(user => (
             <tr key={user.id} className="bg-gray-700 border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-blue-600">
-              <th scope="row" className="px-6 py-4 font-medium text-gray-300 whitespace-nowrap dark:text-gray-300">
+              <th scope="row" className="px-6 py-4 font-medium text-gray-300 whitespace-nowrap dark:text-gray-300 flex items-center">
+                <img
+                  className="h-8 w-8 rounded-full mr-2"
+                  src={user.photo}
+                  alt={`${user.name}'s profile`}
+                />
                 {user.name}
               </th>
               <td className="px-6 py-4">
