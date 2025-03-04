@@ -1,9 +1,10 @@
 @import "tailwindcss";
 
-:root{ background: rgb(4,4,32);
-    background: radial-gradient(circle, rgba(4,4,32,1) 0%, rgba(0,0,0,1) 62%, rgba(6,5,5,1) 100%); 
+:root{background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);
+    
 }
-.sx-react-calendar-wrapper {
+
+.sxReactCalendarWrapper {
     width: 100%;
-    height: 400px;
+    height: 800px;
   }
