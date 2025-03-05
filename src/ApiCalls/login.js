@@ -13,3 +13,5 @@ const login = async (email, password) => {
         throw error;
     }
 };
+
+export default login;
