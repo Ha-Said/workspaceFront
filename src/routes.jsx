@@ -9,6 +9,8 @@ import { CalendarApp } from "./pages/Schedule";
 import './App.css';
 import './Loader.css';
 import {Rooms} from './pages/rooms';
+import Reports from'./pages/reports';
+import AccountForm from './components/editProfile';
 function Routing() {
   const [loading, setLoading] = useState(true);
 
@@ -38,6 +40,8 @@ function Routing() {
             <Route path='/community' element={<Community />} />
             <Route path='/schedule' element={<CalendarApp />} />
             <Route path='/rooms' element={<Rooms/>}/>
+            <Route path='/reports' element={<Reports/>} />
+            <Route path="/editProfile/:email" element={<AccountForm />} />
           </Route>
         </Routes>
       </Router>

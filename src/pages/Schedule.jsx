@@ -9,7 +9,7 @@ import { createEventsServicePlugin } from '@schedule-x/events-service';
 import { useState, useEffect } from 'react';
 import '@schedule-x/theme-default/dist/index.css';
 import {ModalForm} from '../components/modalForm';
-
+import UserList from '../components/list';
 export function CalendarApp() {
   const now = new Date();
   const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
@@ -47,8 +47,10 @@ export function CalendarApp() {
       >
         Add Event
       </button>
+      <div className='flex'> 
       <ScheduleXCalendar calendarApp={calendar} />
       <ModalForm isOpen={isModalOpen} toggleModal={toggleModal} />
+      <UserList /></div>
     </div>
   );
 }
