@@ -39,8 +39,13 @@ export function Rooms() {
               </svg>
             </a>
           </div>
+          
         </div>
+        
       ))}
+      <div  className="max-w-sm h-32 bg-white border border-dotted border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 flex justify-center items-center">
+  <a href="#" className="block w-full h-full flex justify-center items-center text-4xl text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">+</a>
+</div>
     </div>
   );
 }

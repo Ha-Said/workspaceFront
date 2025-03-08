@@ -11,6 +11,7 @@ import './Loader.css';
 import {Rooms} from './pages/rooms';
 import Reports from'./pages/reports';
 import AccountForm from './components/editProfile';
+import {Billing} from './pages/billing';
 function Routing() {
   const [loading, setLoading] = useState(true);
 
@@ -42,6 +43,7 @@ function Routing() {
             <Route path='/rooms' element={<Rooms/>}/>
             <Route path='/reports' element={<Reports/>} />
             <Route path="/editProfile/:email" element={<AccountForm />} />
+            <Route path='/billing' element={<Billing/>}/>
           </Route>
         </Routes>
       </Router>

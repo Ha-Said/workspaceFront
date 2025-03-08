@@ -2,11 +2,10 @@ import React from "react";
 import { Fade } from "react-awesome-reveal";
 import { Footer } from "../components/footer";
 import {Button} from "../components/button"
-import "../landing.css"
 export function Landing() {
   return (
     <div
-      className="leading-normal tracking-normal text-indigo-400 m-6 bg-cover bg-fixed "
+      className="leading-normal tracking-normal text-indigo-400 m-6 bg-cover bg-fixed"
       style={{ backgroundImage: "url('header.png')" }}
     >
       <div className="h-full mb-20">

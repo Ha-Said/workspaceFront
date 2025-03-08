@@ -28,3 +28,24 @@ export const getAllWorkspaces = async () => {
     throw error.response?.data || 'Workspace retrieval failed';
   }
 };
+export const getAllBookings = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/booking/getAllBookings`);
+    return response.data;
+  }
+  catch (error) {
+    throw error.response?.data || 'Booking retrieval failed';
+  }
+};
+
+export const getPaiments = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/paiments/getPaiments`);
+    
+    console.log(response.data);
+    return response.data;
+  }
+  catch (error) {
+    throw error.response?.data || 'Payment retrieval failed';
+  }
+};

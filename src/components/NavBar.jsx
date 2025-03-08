@@ -10,6 +10,7 @@ export function Navbar() {
     { name: 'Schedule', path: '/schedule' },
     { name: 'Community', path: '/community' },
     { name: 'Rooms', path: '/rooms' },
+    { name: 'Billing ', path: '/billing ' },
     { name: 'Reports', path: '/reports' },
   ];
 
