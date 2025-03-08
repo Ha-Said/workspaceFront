@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getPaiments } from '../ApiCalls/apiCalls'; 
+import { getPaiments } from '../../ApiCalls/apiCalls'; 
 
 export function Billing() {
   const [paymentLogs, setPaymentLogs] = useState([]);
@@ -76,15 +76,16 @@ export function Billing() {
               <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
                 Status: {payment.paimentStatus === 'Pending Payment' ? 'Waiting to be Paid' : 'Waiting to be Confirmed'}
               </p>
-              {payment.paimentStatus === 'Pending Payment' && (
-                <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                  Pay Now
-                </button>
-              )}
-              {payment.paimentStatus === 'Pending Confirmation' && (
-                <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+              
+              {payment.paimentStatus === 'Pending' && (
+                <div>
+                <button className="mr-3 inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                   Confirm Payment
                 </button>
+                <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                Cancel
+              </button>
+              </div>
               )}
             </div>
           </div>

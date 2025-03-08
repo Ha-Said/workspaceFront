@@ -1,5 +1,5 @@
 
-import {TableCard } from '../components/usersTable';
+import {TableCard } from '../components/managerComponents/usersTable';
 export function Community(){
     return(
         <div className="community">

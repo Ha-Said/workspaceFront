@@ -1,7 +1,7 @@
 import React from "react";
 import { Fade } from "react-awesome-reveal";
-import { Footer } from "../components/footer";
-import {Button} from "../components/button"
+import { Footer } from "../../components/managerComponents/footer";
+import {Button} from "../../components/managerComponents/button"
 export function Landing() {
   return (
     <div
