@@ -16,14 +16,12 @@ export function LoginPage() {
       const response = await axios.post(
         "http://localhost:5000/auth/login",
         { email, password },
-        { withCredentials: true } // Include credentials for cross-origin requests
+        { withCredentials: true } 
       );
 
-      // Store token and user info
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
-      // Redirect based on user role
       if (response.data.user.role === "owner") {
         navigate("/schedule");
       } else if (response.data.user.role === "Member") {

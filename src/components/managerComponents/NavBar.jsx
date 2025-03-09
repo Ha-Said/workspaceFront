@@ -7,11 +7,11 @@ export function Navbar() {
 
   // Define your nav links with names and paths.
   const navLinks = [
-    { name: 'Schedule', path: '/schedule' },
-    { name: 'Community', path: '/community' },
-    { name: 'Rooms', path: '/rooms' },
-    { name: 'Billing ', path: '/billing ' },
-    { name: 'Reports', path: '/reports' },
+    { name: 'Schedule', path: '/manager/schedule' },
+    { name: 'Community', path: '/manager/community' },
+    { name: 'Rooms', path: '/manager/rooms' },
+    { name: 'Billing ', path: '/manager/billing ' },
+    { name: 'Reports', path: '/manager/reports' },
   ];
 
   // If the current path doesn’t match any link, you can fall back to a default name.

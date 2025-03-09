@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { LoginPage } from './pages/managerPages/login';
-import { RegisterPage } from './pages/managerPages/register';
+import { LoginPage } from './pages/login';
+import { RegisterPage } from './pages/register';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Landing } from './pages/managerPages/landing';
 import { Dashboard } from './templates/Dashboard';
 import {UserDashboard } from './templates/userDashboard';
-import { Community } from './templates/community';
+import { Community } from './pages/managerPages/community';
 import { CalendarApp } from "./pages/managerPages/Schedule";
 import './App.css';
 import './Loader.css';
@@ -13,6 +13,7 @@ import {Rooms} from './pages/managerPages/rooms';
 import Reports from'./pages/managerPages/reports';
 import AccountForm from './components/managerComponents/editProfile';
 import {Billing} from './pages/managerPages/billing';
+import { Error } from './pages/Error';
 //USER IMPORTS
 import { UserCalendar } from './pages/userPages/Schedule';
 function Routing() {
@@ -41,6 +42,8 @@ function Routing() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/" element={<Landing />} />
           <Route element={<Dashboard />}>
+            
+          <Route path='/manager' element={<CalendarApp />} />
             <Route path='/manager/community' element={<Community />} />
             <Route path='/manager/schedule' element={<CalendarApp />} />
             <Route path='/manager/rooms' element={<Rooms/>}/>
@@ -49,6 +52,8 @@ function Routing() {
             <Route path='/manager/billing' element={<Billing/>}/>
           </Route>
           <Route element={<UserDashboard/>}>
+          
+          <Route path="/user" element={<UserCalendar />} />
           <Route path="/user/community" element={<Community />} />
           <Route path="/user/schedule" element={<UserCalendar />} />
           <Route path="/user/rooms" element={<Rooms />} />
@@ -56,7 +61,7 @@ function Routing() {
           <Route path="/editProfile/:email" element={<AccountForm />} />
           <Route path="/user/billing" element={<Billing />} />
           </Route>
-          <Route path="*" element={<h1>Not Found</h1>} />
+          <Route path="*" element={<Error/>} />
 
         </Routes>
       </Router>

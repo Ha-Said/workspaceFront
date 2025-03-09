@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import calendar from '../../assets/calendar.svg';
+import community from '../../assets/community.svg';
+import rooms from '../../assets/room.svg';
 
 export function UserNavbar() {
   const location = useLocation();
   const currentPath = location.pathname;
 
   const navLinks = [
-    { name: 'Schedule', path: '/schedule' },
-    { name: 'Community', path: '/community' },
-    { name: 'Rooms', path: '/rooms' },
-    { name: 'Billing', path: '/billing' },
-    { name: 'Reports', path: '/reports' },
+    { name: 'Schedule', path: '/schedule', icon: calendar },
+    { name: 'Community', path: '/community', icon: community },
+    { name: 'Rooms', path: '/rooms', icon: rooms },
   ];
 
   const activePage = navLinks.find(link => link.path === currentPath);
@@ -49,16 +50,7 @@ export function UserNavbar() {
                   ></path>
                 </svg>
               </button>
-              <a href="https://flowbite.com" className="flex ms-2 md:me-24">
-                <img
-                  src="https://flowbite.com/docs/images/logo.svg"
-                  className="h-8 me-3"
-                  alt="FlowBite Logo"
-                />
-                <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">
-                  Flowbite
-                </span>
-              </a>
+              <h1 className="text-lg font-semibold text-gray-900 dark:text-white">{activePageTitle}</h1>
             </div>
             <div className="flex items-center">
               <div className="flex items-center ms-3">
@@ -154,16 +146,7 @@ export function UserNavbar() {
                     currentPath === link.path ? 'bg-indigo-600 text-white' : ''
                   }`}
                 >
-                  <svg
-                    className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 22 21"
-                  >
-                    <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
-                    <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
-                  </svg>
+                  <img src={link.icon} alt={`${link.name} icon`} className="inline-block h-5 w-5 mr-2" />
                   <span className="ms-3">{link.name}</span>
                 </a>
               </li>
