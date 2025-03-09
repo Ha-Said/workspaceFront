@@ -14,6 +14,7 @@ import Reports from'./pages/managerPages/reports';
 import AccountForm from './components/managerComponents/editProfile';
 import {Billing} from './pages/managerPages/billing';
 import { Error } from './pages/Error';
+import FAQ from './pages/FAQ'
 //USER IMPORTS
 import { UserCalendar } from './pages/userPages/Schedule';
 function Routing() {
@@ -38,6 +39,7 @@ function Routing() {
     <div className="App">
       <Router>
         <Routes>
+          <Route path="/faq" element={<FAQ />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/" element={<Landing />} />

@@ -35,25 +35,29 @@ export function UserModalForm({ isOpen, toggleModal }) {
       }));
     }
   }, []);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
+  
     setFormData((prevData) => {
       const updatedData = { ...prevData, [name]: value };
-
+  
       if (name === 'workspace') {
-        const selectedWorkspace = workspaces.find((workspace) => workspace.id === value);
+        const selectedIndex = e.target.selectedIndex - 1; 
+        console.log("Selected Index:", selectedIndex);
+  
+        const selectedWorkspace = workspaces[selectedIndex]; 
         const newPricePerHour = selectedWorkspace ? selectedWorkspace.pricePerHour : 0;
+  
         setPricePerHour(newPricePerHour);
-        console.log(newPricePerHour);
         calculateTotalCost(updatedData.date, updatedData.startTime, updatedData.endTime, newPricePerHour);
       } else if (name === 'startTime' || name === 'endTime') {
         calculateTotalCost(updatedData.date, updatedData.startTime, updatedData.endTime, pricePerHour);
       }
-      console.log(workspaces)
+  
       return updatedData;
     });
   };
+  
 
   const calculateTotalCost = (date, startTime, endTime, pricePerHour) => {
     if (date && startTime && endTime && pricePerHour) {
@@ -142,6 +146,13 @@ export function UserModalForm({ isOpen, toggleModal }) {
                       ))}
                     </select>
                   </div>
+                  {formData.workspace && (
+                    <div className="col-span-2">
+                      <p className="text-sm text-gray-900 dark:text-white">
+                        This workspace costs: ${pricePerHour.toFixed(2)} per hour
+                      </p>
+                    </div>
+                  )}
                   <div className="col-span-2">
                     <label
                       htmlFor="date"
