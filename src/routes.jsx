@@ -1,22 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { LoginPage } from './pages/login';
-import { RegisterPage } from './pages/register';
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Landing } from './pages/managerPages/landing';
-import { Dashboard } from './templates/Dashboard';
-import {UserDashboard } from './templates/userDashboard';
-import { Community } from './pages/managerPages/community';
-import { CalendarApp } from "./pages/managerPages/Schedule";
+//CSS STYLES 
 import './App.css';
 import './Loader.css';
-import {Rooms} from './pages/managerPages/rooms';
-import Reports from'./pages/managerPages/reports';
-import AccountForm from './components/managerComponents/editProfile';
-import {Billing} from './pages/managerPages/billing';
+
+import Loading from './components/loading';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+//Templates 
+
+import { Dashboard } from './templates/Dashboard';
+import {UserDashboard } from './templates/userDashboard';
 import { Error } from './pages/Error';
 import FAQ from './pages/FAQ'
-//USER IMPORTS
-import { UserCalendar } from './pages/userPages/Schedule';
+//MANAGER IMPORTS 
+import LoginPage from './pages/login';
+import RegisterPage  from './pages/register';
+import  Landing  from './pages/managerPages/landing';
+import  Community  from './pages/managerPages/community';
+import  CalendarApp  from "./pages/managerPages/Schedule";
+import Spaces from './pages/managerPages/rooms';
+import Reports from'./pages/managerPages/reports';
+import AccountForm from './components/managerComponents/editProfile';
+import Billing from './pages/managerPages/billing';
+
+
+ //USER IMPORTS
+import  UserCalendar  from './pages/userPages/Schedule';
+import UserSpaces  from './pages/userPages/spaces';
+
 function Routing() {
   const [loading, setLoading] = useState(true);
 
@@ -29,9 +39,7 @@ function Routing() {
 
   if (loading) {
     return (
-      <div className="loader-container">
-        <div className="loader"></div>
-      </div>
+      <Loading/>
     );
   }
 
@@ -48,20 +56,20 @@ function Routing() {
           <Route path='/manager' element={<CalendarApp />} />
             <Route path='/manager/community' element={<Community />} />
             <Route path='/manager/schedule' element={<CalendarApp />} />
-            <Route path='/manager/rooms' element={<Rooms/>}/>
+            <Route path='/manager/rooms' element={<Spaces/>}/>
             <Route path='/manager/reports' element={<Reports/>} />
             <Route path="/editProfile/:email" element={<AccountForm />} />
             <Route path='/manager/billing' element={<Billing/>}/>
           </Route>
           <Route element={<UserDashboard/>}>
           
-          <Route path="/user" element={<UserCalendar />} />
-          <Route path="/user/community" element={<Community />} />
-          <Route path="/user/schedule" element={<UserCalendar />} />
-          <Route path="/user/rooms" element={<Rooms />} />
-          <Route path="/user/reports" element={<Reports />} />
-          <Route path="/editProfile/:email" element={<AccountForm />} />
-          <Route path="/user/billing" element={<Billing />} />
+            <Route path="/user" element={<UserCalendar />} />
+            <Route path="/user/community" element={<Community />} />
+            <Route path="/user/schedule" element={<UserCalendar />} />
+            <Route path="/user/reports" element={<Reports />} />
+            <Route path="/editProfile/:email" element={<AccountForm />} />
+            <Route path="/user/billing" element={<Billing />} />
+            <Route path="/user/spaces" element={<UserSpaces />} />
           </Route>
           <Route path="*" element={<Error/>} />
 

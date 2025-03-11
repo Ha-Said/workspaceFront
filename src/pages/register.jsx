@@ -1,22 +1,25 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../ApiCalls/apiCalls';
-export function RegisterPage() {
+export default function RegisterPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [showErrorToast, setShowErrorToast] = useState(false);
+  const [image, setImage] = useState(null);
   const navigate = useNavigate();
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const formData = {
-      name: username,
-      email,
-      phone,
-      password,
-    };
+    const formData = new FormData();
+    formData.append('name', username);
+    formData.append('email', email);
+    formData.append('phone', phone);
+    formData.append('password', password);
+    if (image) {
+      formData.append('image', image);
+    }
     try {
       const response = await registerUser(formData);
       setShowSuccessToast(true);
@@ -90,6 +93,18 @@ export function RegisterPage() {
                       </div>
                       <div className="flex items-center">
                         <input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Password' className="block w-full border-0 bg-transparent p-0 text-sm file:my-1 placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 focus:ring-teal-500 sm:leading-7 text-foreground" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <div>
+                    <div className="group relative rounded-lg border focus-within:border-sky-200 px-3 pb-1.5 pt-2.5 duration-200 focus-within:ring focus-within:ring-sky-300/30">
+                      <div className="flex justify-between">
+                        <label className="text-xs font-medium text-muted-foreground group-focus-within:text-white text-gray-400">Profile Image</label>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="file" name="image" onChange={(e) => setImage(e.target.files[0])} className="block w-full border-0 bg-transparent p-0 text-sm file:my-1 placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 focus:ring-teal-500 sm:leading-7 text-foreground" />
                       </div>
                     </div>
                   </div>

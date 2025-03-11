@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getPaiments } from '../../ApiCalls/apiCalls'; 
 
-export function Billing() {
+export default function Billing() {
   const [paymentLogs, setPaymentLogs] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [visiblePayments, setVisiblePayments] = useState(10);

@@ -11,7 +11,7 @@ import { createEventsServicePlugin } from '@schedule-x/events-service';
 import { getAllBookings } from '../../ApiCalls/apiCalls';
 import '@schedule-x/theme-default/dist/index.css';
 
-export function CalendarApp() {
+export default function CalendarApp() {
   const [bookings, setBookings] = useState([]);
   const [visibleBookings, setVisibleBookings] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");

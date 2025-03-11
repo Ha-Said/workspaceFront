@@ -2,7 +2,7 @@ import React from "react";
 import { Fade } from "react-awesome-reveal";
 import { Footer } from "../../components/managerComponents/footer";
 import {Button} from "../../components/managerComponents/button"
-export function Landing() {
+export  default function Landing() {
   return (
     <div
       className="leading-normal tracking-normal text-indigo-400 m-6 bg-cover bg-fixed"

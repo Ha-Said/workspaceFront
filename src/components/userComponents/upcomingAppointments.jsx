@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { getBookingByMemberId } from "../../ApiCalls/apiCalls";
-import { updateBooking } from "../../ApiCalls/apiCalls";
+import { UpdateBookingModal } from './updateBookingModal'; // Import UpdateBookingModal
+
 export function UpcomingAppointments() {
   const [bookings, setBookings] = useState([]);
   const [visibleBookings, setVisibleBookings] = useState(10);
-  const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState("");
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -37,16 +39,6 @@ export function UpcomingAppointments() {
     setVisibleBookings((prevVisibleBookings) => prevVisibleBookings + 10);
   };
 
-  const handleSearch = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const filteredBookings = bookings.filter((booking) =>
-    (booking.date?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    booking.startTime?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    booking.endTime?.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
-
   const formatTime = (time) => {
     const [hours, minutes] = time.split(':');
     const period = hours >= 12 ? 'PM' : 'AM';
@@ -54,9 +46,13 @@ export function UpcomingAppointments() {
     return `${formattedHours}:${minutes} ${period}`;
   };
 
+  const handleEditBooking = (booking) => {
+    setSelectedBooking(booking);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-      
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
@@ -75,9 +71,9 @@ export function UpcomingAppointments() {
           </tr>
         </thead>
         <tbody>
-          {filteredBookings.slice(0, visibleBookings).map((booking) => (
+          {bookings.slice(0, visibleBookings).map((booking, index) => (
             <tr
-              key={booking.id}
+              key={booking.id || index} // Add unique key prop
               className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200"
             >
               <td className="px-6 py-4">{new Date(booking.date).toISOString().split('T')[0]}</td>
@@ -85,13 +81,13 @@ export function UpcomingAppointments() {
               <td className="px-6 py-4">{formatTime(booking.endTime)}</td>
               <td className="px-6 py-4 ">
                 <button
-                  onClick={() => handleEditBooking(booking.id)}
+                  onClick={() => handleEditBooking(booking)}
                   className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 mr-4"
                 >
                   Edit
                 </button>
                 <button
-                  onClick={() => handleEditBooking(booking.id)}
+                  onClick={() => handleEditBooking(booking)}
                   className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
                 >
                   Invite
@@ -101,7 +97,7 @@ export function UpcomingAppointments() {
           ))}
         </tbody>
       </table>
-      {visibleBookings < filteredBookings.length && (
+      {visibleBookings < bookings.length && (
         <div className="flex justify-center mt-4">
           <button
             onClick={handleShowMore}
@@ -111,10 +107,11 @@ export function UpcomingAppointments() {
           </button>
         </div>
       )}
+      <UpdateBookingModal
+        isOpen={isModalOpen}
+        toggleModal={() => setIsModalOpen(false)}
+        booking={selectedBooking}
+      />
     </div>
   );
 }
-
-const handleEditBooking = (bookingId) => {
-  console.log(`Edit booking with id: ${bookingId}`);
-};

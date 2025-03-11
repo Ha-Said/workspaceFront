@@ -9,9 +9,9 @@ export function UserNavbar() {
   const currentPath = location.pathname;
 
   const navLinks = [
-    { name: 'Schedule', path: '/schedule', icon: calendar },
+    { name: 'Schedule', path: '/user/schedule', icon: calendar },
     { name: 'Community', path: '/community', icon: community },
-    { name: 'Rooms', path: '/rooms', icon: rooms },
+    { name: 'Spaces', path: '/user/spaces', icon: rooms },
   ];
 
   const activePage = navLinks.find(link => link.path === currentPath);

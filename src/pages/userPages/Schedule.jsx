@@ -14,7 +14,7 @@ import { UserModalForm } from '../../components/userComponents/modalForm';
 import { UpcomingAppointments } from '../../components/userComponents/upcomingAppointments';
 import { PastAppointments } from '../../components/userComponents/pastAppointments';
 
-export function UserCalendar() {
+export default function UserCalendar() {
   const [bookings, setBookings] = useState([]);
   const [visibleBookings, setVisibleBookings] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");

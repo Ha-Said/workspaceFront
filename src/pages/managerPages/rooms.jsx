@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAllWorkspaces } from '../../ApiCalls/apiCalls';
 
-export function Rooms() {
+export default function Spaces() {
   const [workspaces, setWorkspaces] = useState([]);
 
   useEffect(() => {

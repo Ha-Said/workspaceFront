@@ -77,3 +77,11 @@ export const updateBooking = async (bookingData) => {
     throw error.response?.data || 'Booking update failed';
   }
 }
+export const deleteBooking = async (bookingId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/booking/deleteBooking/${bookingId}`);
+    return response.data;
+  }catch (error){
+    console.log(error);
+    throw error.response?.data || 'Booking deletion failed';
+  }};
