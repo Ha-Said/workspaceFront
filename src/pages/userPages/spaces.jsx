@@ -1,37 +1,53 @@
 import React, { useEffect, useState } from "react";
 import { getAllWorkspaces } from "../../ApiCalls/apiCalls";
 import { RoomForm } from "../../components/userComponents/modalRoomForm";
-
 import { SpaceModal } from "../../components/userComponents/spaceModal";
+
 export default function UserSpaces() {
+  // State declarations
   const [workspaces, setWorkspaces] = useState([]);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(null); // 'reserve' or 'details'
+  const [currentImageIndex, setCurrentImageIndex] = useState({});
 
-  const toggleModal = (workspace) => {
-    if (workspace) {
-      setSelectedWorkspace(workspace);
-      setIsModalOpen(true);
-    } else {
-      setIsModalOpen(false);
-      setSelectedWorkspace(null);
-    }
+  // Function to close the modal
+  const closeModal = () => {
+    setModalType(null);
+    setSelectedWorkspace(null);
   };
 
-  const toggleModal2 = (workspace) => {
-    if (workspace) {
-      setSelectedWorkspace(workspace);
-      setIsModalOpen(true);
-    } else {
-      setIsModalOpen(false);
-      setSelectedWorkspace(null);
-    }
+  // Image carousel navigation functions
+  const handleNextImage = (workspaceId) => {
+    setCurrentImageIndex((prevState) => {
+      const ws = workspaces.find((ws) => ws._id === workspaceId);
+      if (!ws || !ws.photo || ws.photo.length === 0) return prevState;
+      const newIndex = (prevState[workspaceId] + 1) % ws.photo.length;
+      return { ...prevState, [workspaceId]: newIndex };
+    });
   };
+
+  const handlePrevImage = (workspaceId) => {
+    setCurrentImageIndex((prevState) => {
+      const ws = workspaces.find((ws) => ws._id === workspaceId);
+      if (!ws || !ws.photo || ws.photo.length === 0) return prevState;
+      const newIndex = (prevState[workspaceId] - 1 + ws.photo.length) % ws.photo.length;
+      return { ...prevState, [workspaceId]: newIndex };
+    });
+  };
+
+  // Fetch workspaces on component mount
   useEffect(() => {
     getAllWorkspaces()
       .then((data) => {
         if (Array.isArray(data)) {
           setWorkspaces(data);
+          const initialImageIndex = data.reduce((acc, workspace) => {
+            if (workspace.photo && workspace.photo.length > 0) {
+              acc[workspace._id] = 0;
+            }
+            return acc;
+          }, {});
+          setCurrentImageIndex(initialImageIndex);
         } else {
           console.error("Expected an array but got:", data);
         }
@@ -39,10 +55,9 @@ export default function UserSpaces() {
       .catch((error) => console.error("Error fetching workspaces:", error));
   }, []);
 
-  console.log(workspaces);
-
   return (
     <div>
+      {/* Workspace list */}
       <div className="flex flex-wrap gap-6">
         {Array.isArray(workspaces) &&
           workspaces.map((workspace) => (
@@ -50,13 +65,37 @@ export default function UserSpaces() {
               key={workspace._id}
               className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700"
             >
-              <a href="#">
-                <img
-                  className="rounded-t-lg"
-                  src={workspace.photo}
-                  alt={workspace.name}
-                />
-              </a>
+              {/* Image carousel */}
+              <div className="relative">
+                {workspace.photo && workspace.photo.length > 0 ? (
+                  <>
+                    <img
+                      className="rounded-t-lg object-cover"
+                      src={workspace.photo[currentImageIndex[workspace._id]]}
+                      alt={workspace.name}
+                      style={{ width: "100%", height: "20em", maxWidth: "30em" }}
+                    />
+                    <span
+                      onClick={() => handlePrevImage(workspace._id)}
+                      className="absolute top-1/2 left-0 transform -translate-y-1/2  text-white p-1 rounded-full cursor-pointer"
+                    >
+                      &lt;
+                    </span>
+                    <span
+                      onClick={() => handleNextImage(workspace._id)}
+                      className="absolute top-1/2  right-0 transform -translate-y-1/2  text-white p-1 rounded-full cursor-pointer"
+                    >
+                      &gt;
+                    </span>
+                  </>
+                ) : (
+                  <div className="rounded-t-lg bg-gray-200 h-48 flex items-center justify-center">
+                    <p className="text-gray-500">No images available</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Workspace details */}
               <div className="p-5">
                 <a href="#">
                   <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
@@ -78,9 +117,13 @@ export default function UserSpaces() {
                 <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
                   Price per hour: {workspace.pricePerHour} DT
                 </p>
+
+                {/* Buttons */}
                 <button
-                onClick={() => toggleModal2(workspace)}
-                  
+                  onClick={() => {
+                    setSelectedWorkspace(workspace);
+                    setModalType("details");
+                  }}
                   className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 >
                   Read more
@@ -101,7 +144,10 @@ export default function UserSpaces() {
                   </svg>
                 </button>
                 <button
-                  onClick={() => toggleModal(workspace)}
+                  onClick={() => {
+                    setSelectedWorkspace(workspace);
+                    setModalType("reserve");
+                  }}
                   className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 ml-2"
                 >
                   Reserve
@@ -110,19 +156,22 @@ export default function UserSpaces() {
             </div>
           ))}
       </div>
-      {selectedWorkspace && (
+
+      {/* Conditional modal rendering */}
+      {modalType === "reserve" && selectedWorkspace && (
         <RoomForm
-          isOpen={isModalOpen}
-          toggleModal={toggleModal}
+          isOpen={true}
+          toggleModal={closeModal}
           space={selectedWorkspace}
-        />)}
-        {selectedWorkspace && (
-          <SpaceModal
-            isOpen={isModalOpen}
-            toggleModal={toggleModal}
-            space={selectedWorkspace}
-          />)}
-      
+        />
+      )}
+      {modalType === "details" && selectedWorkspace && (
+        <SpaceModal
+          isOpen={true}
+          toggleModal={closeModal}
+          space={selectedWorkspace}
+        />
+      )}
     </div>
   );
 }

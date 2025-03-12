@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getBookingByMemberId } from "../../ApiCalls/apiCalls";
 import { UpdateBookingModal } from './updateBookingModal'; // Import UpdateBookingModal
+import { EmailForm } from './EmailInviteModal';
 
 export function UpcomingAppointments() {
   const [bookings, setBookings] = useState([]);
@@ -8,6 +9,7 @@ export function UpcomingAppointments() {
   const [error, setError] = useState("");
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false); // State for invite modal
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -51,6 +53,11 @@ export function UpcomingAppointments() {
     setIsModalOpen(true);
   };
 
+  const handleInviteBooking = (booking) => {
+    setSelectedBooking(booking);
+    setIsInviteModalOpen(true);
+  };
+
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -87,7 +94,7 @@ export function UpcomingAppointments() {
                   Edit
                 </button>
                 <button
-                  onClick={() => handleEditBooking(booking)}
+                  onClick={() => handleInviteBooking(booking)}
                   className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
                 >
                   Invite
@@ -110,6 +117,11 @@ export function UpcomingAppointments() {
       <UpdateBookingModal
         isOpen={isModalOpen}
         toggleModal={() => setIsModalOpen(false)}
+        booking={selectedBooking}
+      />
+      <EmailForm
+        isOpen={isInviteModalOpen}
+        toggleModal={() => setIsInviteModalOpen(false)}
         booking={selectedBooking}
       />
     </div>

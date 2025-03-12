@@ -110,7 +110,7 @@ export function RoomForm({ isOpen, toggleModal, space }) {
                       space: {space.name}
                     </p>
                     <p className="text-sm text-gray-900 dark:text-white">
-                      This space costs: ${pricePerHour.toFixed(2)} per hour
+                      This space costs: {pricePerHour.toFixed(2)} DT per hour
                     </p>
                   </div>
                   <div className="col-span-2">
@@ -175,7 +175,7 @@ export function RoomForm({ isOpen, toggleModal, space }) {
                       type="text"
                       name="totalCost"
                       id="totalCost"
-                      value={`$${totalCost.toFixed(2)}`}
+                      value={`${totalCost.toFixed(2)} DT `}
                       readOnly
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                     />

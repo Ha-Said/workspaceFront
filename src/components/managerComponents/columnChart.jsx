@@ -51,7 +51,7 @@ const ColumnChart = () => {
       shared: true,
       intersect: false,
       formatter: function (value) {
-        return "$" + value
+        return  value +" DT "
       }
     },
     xaxis: {
@@ -62,7 +62,7 @@ const ColumnChart = () => {
           cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
         },
         formatter: function(value) {
-          return "$" + value
+          return  value +" DT "
         }
       },
       categories: ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],

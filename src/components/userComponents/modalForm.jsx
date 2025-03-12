@@ -149,7 +149,7 @@ export function UserModalForm({ isOpen, toggleModal }) {
                   {formData.workspace && (
                     <div className="col-span-2">
                       <p className="text-sm text-gray-900 dark:text-white">
-                        This workspace costs: ${pricePerHour.toFixed(2)} per hour
+                        This workspace costs: {pricePerHour.toFixed(2)} DT per hour
                       </p>
                     </div>
                   )}
