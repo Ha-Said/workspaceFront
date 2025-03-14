@@ -85,3 +85,13 @@ export const deleteBooking = async (bookingId) => {
     console.log(error);
     throw error.response?.data || 'Booking deletion failed';
   }};
+  export const sendBooking = async(bookingData) => {
+    try {
+      const response = await axios.post(`${API_URL}/email/sendBooking`, bookingData);
+      return response.data;
+
+    }catch (error){
+      console.log(error);
+      throw error.response?.data || 'Invitation failed';
+    }
+  }

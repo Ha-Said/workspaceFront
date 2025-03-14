@@ -7,7 +7,7 @@ export default function UserSpaces() {
   // State declarations
   const [workspaces, setWorkspaces] = useState([]);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
-  const [modalType, setModalType] = useState(null); // 'reserve' or 'details'
+  const [modalType, setModalType] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState({});
 
   // Function to close the modal
@@ -159,18 +159,22 @@ export default function UserSpaces() {
 
       {/* Conditional modal rendering */}
       {modalType === "reserve" && selectedWorkspace && (
-        <RoomForm
-          isOpen={true}
-          toggleModal={closeModal}
-          space={selectedWorkspace}
-        />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <RoomForm
+            isOpen={true}
+            toggleModal={closeModal}
+            space={selectedWorkspace}
+          />
+        </div>
       )}
       {modalType === "details" && selectedWorkspace && (
-        <SpaceModal
-          isOpen={true}
-          toggleModal={closeModal}
-          space={selectedWorkspace}
-        />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <SpaceModal
+            isOpen={true}
+            toggleModal={closeModal}
+            space={selectedWorkspace}
+          />
+        </div>
       )}
     </div>
   );

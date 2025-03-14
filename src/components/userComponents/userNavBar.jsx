@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import calendar from '../../assets/calendar.svg';
 import community from '../../assets/community.svg';
 import rooms from '../../assets/room.svg';
@@ -7,6 +7,9 @@ import rooms from '../../assets/room.svg';
 export function UserNavbar() {
   const location = useLocation();
   const currentPath = location.pathname;
+  const [user, setUser] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const navLinks = [
     { name: 'Schedule', path: '/user/schedule', icon: calendar },
@@ -14,12 +17,32 @@ export function UserNavbar() {
     { name: 'Spaces', path: '/user/spaces', icon: rooms },
   ];
 
-  const activePage = navLinks.find(link => link.path === currentPath);
+  const activePage = navLinks.find((link) => link.path === currentPath);
   const activePageTitle = activePage ? activePage.name : 'Dashboard';
 
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+
+  // Close both mobile and user menus on location change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setIsUserMenuOpen(false);
+  }, [location]);
+
+  // Fetch user data from localStorage on mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser) {
+          setUser(storedUser);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   return (
     <div className="min-h-full">
@@ -28,9 +51,6 @@ export function UserNavbar() {
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-start rtl:justify-end">
               <button
-                data-drawer-target="logo-sidebar"
-                data-drawer-toggle="logo-sidebar"
-                aria-controls="logo-sidebar"
                 type="button"
                 className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
                 onClick={toggleMobileMenu}
@@ -53,73 +73,71 @@ export function UserNavbar() {
               <h1 className="text-lg font-semibold text-gray-900 dark:text-white">{activePageTitle}</h1>
             </div>
             <div className="flex items-center">
-              <div className="flex items-center ms-3">
+              <div className="flex items-center ml-3">
                 <div>
                   <button
                     type="button"
                     className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
-                    aria-expanded="false"
-                    data-dropdown-toggle="dropdown-user"
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   >
                     <span className="sr-only">Open user menu</span>
                     <img
                       className="w-8 h-8 rounded-full"
-                      src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                      src={user?.photo || '/path/to/default/photo.jpg'}
                       alt="user photo"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '/path/to/default/photo.jpg';
+                      }}
                     />
                   </button>
                 </div>
                 <div
-                  className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm dark:bg-gray-700 dark:divide-gray-600"
+                  className={`z-50 mt-2 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm dark:bg-gray-700 dark:divide-gray-600 ${
+                    isUserMenuOpen ? 'block' : 'hidden'
+                  }`}
                   id="dropdown-user"
                 >
-                  <div className="px-4 py-3" role="none">
-                    <p className="text-sm text-gray-900 dark:text-white" role="none">
-                      Neil Sims
+                  <div className="px-4 py-3">
+                    <p className="text-sm text-gray-900 dark:text-white">
+                      {user?.name || 'User Name'}
                     </p>
-                    <p
-                      className="text-sm font-medium text-gray-900 truncate dark:text-gray-300"
-                      role="none"
-                    >
-                      neil.sims@flowbite.com
+                    <p className="text-sm font-medium text-gray-900 truncate dark:text-gray-300">
+                      {user?.email || 'user@example.com'}
                     </p>
                   </div>
-                  <ul className="py-1" role="none">
+                  <ul className="py-1">
                     <li>
-                      <a
-                        href="#"
+                      <Link
+                        to="/user/dashboard"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                        role="menuitem"
                       >
                         Dashboard
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a
-                        href="#"
+                      <Link
+                        to="/user/settings"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                        role="menuitem"
                       >
                         Settings
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a
-                        href="#"
+                      <Link
+                        to="/user/earnings"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                        role="menuitem"
                       >
                         Earnings
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a
-                        href="#"
+                      <Link
+                        to="/logout"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                        role="menuitem"
                       >
                         Sign out
-                      </a>
+                      </Link>
                     </li>
                   </ul>
                 </div>
@@ -136,23 +154,36 @@ export function UserNavbar() {
         } bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700`}
         aria-label="Sidebar"
       >
-        <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
-          <ul className="space-y-2 font-medium">
-            {navLinks.map(link => (
-              <li key={link.name}>
-                <a
-                  href={link.path}
-                  className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${
-                    currentPath === link.path ? 'bg-indigo-600 text-white' : ''
-                  }`}
-                >
-                  <img src={link.icon} alt={`${link.name} icon`} className="inline-block h-5 w-5 mr-2" />
-                  <span className="ms-3">{link.name}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <div className="h-full flex flex-col px-3 pb-4 overflow-y-auto">
+  <ul className="space-y-2 font-medium">
+    {navLinks.map((link) => (
+      <li key={link.name}>
+        <Link
+          to={link.path}
+          className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${
+            currentPath === link.path ? 'bg-indigo-600 text-white' : ''
+          }`}
+        >
+          <img
+            src={link.icon}
+            alt={`${link.name} icon`}
+            className="inline-block h-5 w-5 mr-2"
+          />
+          <span className="ml-3">{link.name}</span>
+        </Link>
+      </li>
+    ))}
+  </ul>
+  
+  {/* Push this to the bottom */}
+  
+  <Link className="mt-auto flex items-center p-2 font-bold text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ">
+  Settings
+   </Link>
+  <Link className="flex items-center p-2 font-bold text-red-900 rounded-lg dark:text-red hover:bg-gray-100 dark:hover:bg-red-700 mb-15">
+  Logout
+   </Link>
+</div>
       </aside>
     </div>
   );

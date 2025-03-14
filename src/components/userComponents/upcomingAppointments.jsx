@@ -80,7 +80,7 @@ export function UpcomingAppointments() {
         <tbody>
           {bookings.slice(0, visibleBookings).map((booking, index) => (
             <tr
-              key={booking.id || index} // Add unique key prop
+              key={booking.id || index} 
               className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200"
             >
               <td className="px-6 py-4">{new Date(booking.date).toISOString().split('T')[0]}</td>

@@ -1,24 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { createBooking } from '../../ApiCalls/apiCalls';
+import { sendBooking } from '../../ApiCalls/apiCalls';
 
-export function EmailForm({ isOpen, toggleModal, space, bookings }) {
+export function EmailForm({ isOpen, toggleModal, booking }) {
   const [emails, setEmails] = useState(['']);
-    const [formData, setFormData] = useState({
+  const [message, setMessage] = useState('');
+  const [formData, setFormData] = useState({
     user: '',
-    });
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-      setFormData((prevData) => ({
-        ...prevData,
-        user: user.id,
-      }));
-    }
+  });
 
-    if (space) {
-      setPricePerHour(space.pricePerHour);
-    }
-  }, [space]);
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (user) {
+          setFormData((prevData) => ({
+            ...prevData,
+            user: user.id,
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchBookings();
+  }, []);
 
   const handleEmailChange = (index, event) => {
     const newEmails = [...emails];
@@ -34,19 +41,32 @@ export function EmailForm({ isOpen, toggleModal, space, bookings }) {
     const newEmails = emails.filter((_, i) => i !== index);
     setEmails(newEmails);
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const organizerEmail = user.email;
+  
+      // Ensure proper date format (YYYY-MM-DD)
+      const formatDate = (date) => new Date(date).toISOString().split("T")[0];
+  
       const bookingData = {
-        emails,
+        emails: emails.join(' '), // Join emails with commas instead of spaces
+        startDate: formatDate(booking.startTime),
+        endDate: formatDate(booking.endTime),
+        message: message || "This is a test booking event.",
+        organizerEmail
       };
-      await createBooking(bookingData);
+  
+      console.log(bookingData); // Debug log
+      await sendBooking(bookingData);
+      console.log("Booking sent successfully");
       toggleModal();
     } catch (error) {
-      console.error('Error creating booking:', error);
+      console.error("Error sending booking:", error);
     }
   };
+  
 
   return (
     <>
@@ -121,6 +141,21 @@ export function EmailForm({ isOpen, toggleModal, space, bookings }) {
                       Add Email
                     </button>
                   </div>
+                  <div className="col-span-2">
+                    <label
+                      htmlFor="message"
+                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Message
+                    </label>
+                    <textarea
+                      id="message"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      rows="4"
+                    ></textarea>
+                  </div>
                 </div>
                 <button
                   type="submit"
@@ -138,7 +173,7 @@ export function EmailForm({ isOpen, toggleModal, space, bookings }) {
                       clipRule="evenodd"
                     ></path>
                   </svg>
-                  Add Booking
+                  send invites
                 </button>
               </form>
             </div>
