@@ -23,12 +23,12 @@ export default function ManagerAnnouncements() {
     return ( 
         <div className="space-y-4">
              <button
-                    type="button"
-                    className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                    id="user-menu-button"
-                    
-                  >qsdqsdqdqdqdqdqdqdqdqdqd </button>
-            {showForm && <AnnouncementForm onClose={() => setShowForm(false)} />}
+                    onClick={() => setShowForm(true)}
+                    className="px-2 py-1 text-white bg-blue-600 rounded hover:bg-blue-700"
+                  >
+                    Post An Announcement
+                  </button>
+            {showForm && <AnnouncementForm isOpen={showForm} toggleModal={() => setShowForm(false)} />}
             {announcements.map((announcement, index) => (
                 <AnnouncementsCard 
                     key={index} 

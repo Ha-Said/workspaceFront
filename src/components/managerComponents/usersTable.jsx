@@ -21,6 +21,16 @@ export function TableCard() {
     setSearchQuery(event.target.value);
   };
 
+  const handleDelete = (userId) => {
+    // Add delete logic here
+    console.log(`Delete user with ID: ${userId}`);
+  };
+
+  const handleAssignManager = (userId) => {
+    // Add assign manager logic here
+    console.log(`Assign manager to user with ID: ${userId}`);
+  };
+
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -65,16 +75,16 @@ export function TableCard() {
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
-            <th scope="col" className="px-6 py-3">
+            <th scope="col" className="px-6 py-3 border-b">
               Name
             </th>
-            <th scope="col" className="px-6 py-3">
+            <th scope="col" className="px-6 py-3 border-b">
               Email
             </th>
-            <th scope="col" className="px-6 py-3">
+            <th scope="col" className="px-6 py-3 border-b">
               Phone
             </th>
-            <th scope="col" className="px-6 py-3">
+            <th scope="col" className="px-6 py-3 border-b">
               Action
             </th>
           </tr>
@@ -91,18 +101,31 @@ export function TableCard() {
               >
                 <img
                   className="w-10 h-10 rounded-full"
-                  src={user.photo}
-                  alt={`${user.name}'s profile`}
+                  src={user?.photo ? `http://localhost:5000/${user.photo}` : 'http://localhost:5000/uploads/placeholder.jpg'}
+                  
                 />
                 <div className="ps-3">
                   <div className="text-base font-semibold">{user.name}</div>
                   <div className="font-normal text-gray-500">{user.email}</div>
                 </div>
               </th>
-              <td className="px-6 py-4">{user.email}</td>
-              <td className="px-6 py-4">{user.phone}</td>
-              <td className="px-6 py-4">
-                <DropDownMenu userEmail={user.email} />
+              <td className="px-6 py-4 border-b">{user.email}</td>
+              <td className="px-6 py-4 border-b">{user.phone}</td>
+              <td className="px-6 py-4 border-b">
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleDelete(user.id)}
+                    className="px-2 py-1 text-white bg-red-600 rounded hover:bg-red-700"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    onClick={() => handleAssignManager(user.id)}
+                    className="px-2 py-1 text-white bg-green-600 rounded hover:bg-green-700"
+                  >
+                    Assign Manager
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

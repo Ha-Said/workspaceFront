@@ -80,7 +80,7 @@ export function UserNavbar() {
                     <span className="sr-only">Open user menu</span>
                     <img
                       className="w-8 h-8 rounded-full"
-                      src={user?.photo ? `http://localhost:5000/${user.photo}` : '/path/to/default/photo.jpg'}
+                      src={user?.photo ? `http://localhost:5000/${user.photo}` : 'http://localhost:5000/uploads/placeholder.jpg'}
                       alt="user photo"
                       onError={(e) => {
                         e.target.onerror = null;
