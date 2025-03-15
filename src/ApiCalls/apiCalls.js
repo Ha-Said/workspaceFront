@@ -95,3 +95,39 @@ export const deleteBooking = async (bookingId) => {
       throw error.response?.data || 'Invitation failed';
     }
   }
+
+export const updateMember = async (memberId, memberData) => {
+  try {
+    const response = await axios.put(`${API_URL}/users/updateMember/${memberId}`, memberData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || 'Member update failed';
+  }
+};
+export const logoutUser = async () => {
+  try {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    return true;
+  } catch (error) {
+    throw error.response?.data || 'Logout failed';
+  }
+}
+
+export const getAllAnnouncements = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/announcements/getAllAnnouncements`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || 'Announcement retrieval failed';
+  }
+};
+
+export const createAnnouncement = async (announcementData) => {
+  try {
+    const response = await axios.post(`${API_URL}/announcements/createAnnouncement`, announcementData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || 'Announcement creation failed';
+  }
+};

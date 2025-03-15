@@ -21,12 +21,14 @@ import Spaces from './pages/managerPages/rooms';
 import Reports from'./pages/managerPages/reports';
 import AccountForm from './components/managerComponents/editProfile';
 import Billing from './pages/managerPages/billing';
-
+import ManagerAnnouncements from './pages/managerPages/announcements';
 
  //USER IMPORTS
 import  UserCalendar  from './pages/userPages/Schedule';
 import UserSpaces  from './pages/userPages/spaces';
-
+import Settings from './pages/userPages/settings';
+import Profile from './pages/userPages/Profile';
+import Announcements from './pages/userPages/announcements';
 function Routing() {
   const [loading, setLoading] = useState(true);
 
@@ -60,6 +62,7 @@ function Routing() {
             <Route path='/manager/reports' element={<Reports/>} />
             <Route path="/editProfile/:email" element={<AccountForm />} />
             <Route path='/manager/billing' element={<Billing/>}/>
+            <Route path='/manager/announcements' element={<ManagerAnnouncements/>}/>
           </Route>
           <Route element={<UserDashboard/>}>
           
@@ -70,6 +73,9 @@ function Routing() {
             <Route path="/editProfile/:email" element={<AccountForm />} />
             <Route path="/user/billing" element={<Billing />} />
             <Route path="/user/spaces" element={<UserSpaces />} />
+            <Route path="/user/settings" element={<Settings />} />
+            <Route path="/user/profile" element={<Profile />} />
+            <Route path="/user/announcements" element={<Announcements />} />
           </Route>
           <Route path="*" element={<Error/>} />
 

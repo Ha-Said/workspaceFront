@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import calendar from '../../assets/calendar.svg';
 import community from '../../assets/community.svg';
 import rooms from '../../assets/room.svg';
-
+import {logoutUser} from '../../ApiCalls/apiCalls';
 export function UserNavbar() {
   const location = useLocation();
   const currentPath = location.pathname;
@@ -22,13 +22,11 @@ export function UserNavbar() {
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
-  // Close both mobile and user menus on location change
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setIsUserMenuOpen(false);
   }, [location]);
 
-  // Fetch user data from localStorage on mount
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -78,12 +76,11 @@ export function UserNavbar() {
                   <button
                     type="button"
                     className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
-                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   >
                     <span className="sr-only">Open user menu</span>
                     <img
                       className="w-8 h-8 rounded-full"
-                      src={user?.photo || '/path/to/default/photo.jpg'}
+                      src={user?.photo ? `http://localhost:5000/${user.photo}` : '/path/to/default/photo.jpg'}
                       alt="user photo"
                       onError={(e) => {
                         e.target.onerror = null;
@@ -135,6 +132,10 @@ export function UserNavbar() {
                       <Link
                         to="/logout"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                        onClick={() => {
+                          logoutUser();
+                          window.location.href = '/login';
+                        }}
                       >
                         Sign out
                       </Link>
@@ -177,12 +178,18 @@ export function UserNavbar() {
   
   {/* Push this to the bottom */}
   
-  <Link className="mt-auto flex items-center p-2 font-bold text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ">
+  <Link to="/user/settings" className="mt-auto flex items-center p-2 font-bold text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700  ">
   Settings
    </Link>
-  <Link className="flex items-center p-2 font-bold text-red-900 rounded-lg dark:text-red hover:bg-gray-100 dark:hover:bg-red-700 mb-15">
-  Logout
-   </Link>
+  <Link
+    className="flex items-center p-2 font-bold text-red-900 rounded-lg dark:text-red hover:bg-gray-100 dark:hover:bg-red-700 mb-15"
+    onClick={() => {
+      logoutUser();
+      window.location.href = '/login';
+    }}
+  >
+    Logout
+  </Link>
 </div>
       </aside>
     </div>

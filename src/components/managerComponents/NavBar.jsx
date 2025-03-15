@@ -12,6 +12,7 @@ export function Navbar() {
     { name: 'Rooms', path: '/manager/rooms' },
     { name: 'Billing ', path: '/manager/billing ' },
     { name: 'Reports', path: '/manager/reports' },
+    {name: 'Announcements', path: '/manager/announcements'},
   ];
 
   // If the current path doesn’t match any link, you can fall back to a default name.
