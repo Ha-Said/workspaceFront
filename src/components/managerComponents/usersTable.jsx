@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getUsers } from "../../ApiCalls/apiCalls";
+import { getUsers, deleteMember, setMemberToManagerRole } from "../../ApiCalls/apiCalls";
 import DropDownMenu from "./dropdown";
 
 export function TableCard() {
@@ -21,14 +21,23 @@ export function TableCard() {
     setSearchQuery(event.target.value);
   };
 
-  const handleDelete = (userId) => {
-    // Add delete logic here
-    console.log(`Delete user with ID: ${userId}`);
+  const handleDelete = async (userId) => {
+    try {
+      await deleteMember(userId);
+      setUsers(users.filter(user => user._id !== userId));
+      console.log(`Deleted user with ID: ${userId}`);
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
   };
 
-  const handleAssignManager = (userId) => {
-    // Add assign manager logic here
-    console.log(`Assign manager to user with ID: ${userId}`);
+  const handleAssignManager = async (userId) => {
+    try {
+      await setMemberToManagerRole(userId);
+      console.log(`Assigned manager role to user with ID: ${userId}`);
+    } catch (error) {
+      console.error("Error assigning manager role:", error);
+    }
   };
 
   const filteredUsers = users.filter((user) =>
@@ -92,7 +101,7 @@ export function TableCard() {
         <tbody>
           {filteredUsers.slice(0, visibleUsers).map((user) => (
             <tr
-              key={user.id}
+              key={user._id}
               className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
             >
               <th
@@ -114,13 +123,13 @@ export function TableCard() {
               <td className="px-6 py-4 border-b">
                 <div className="flex space-x-2">
                   <button
-                    onClick={() => handleDelete(user.id)}
+                    onClick={() => handleDelete(user._id)}
                     className="px-2 py-1 text-white bg-red-600 rounded hover:bg-red-700"
                   >
                     Delete
                   </button>
                   <button
-                    onClick={() => handleAssignManager(user.id)}
+                    onClick={() => handleAssignManager(user._id)}
                     className="px-2 py-1 text-white bg-green-600 rounded hover:bg-green-700"
                   >
                     Assign Manager

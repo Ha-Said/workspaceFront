@@ -131,3 +131,23 @@ export const createAnnouncement = async (announcementData) => {
     throw error.response?.data || 'Announcement creation failed';
   }
 };
+
+export const deleteMember = async(memberId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/users/deleteMember/${memberId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || 'Member deletion failed';
+  }
+};
+
+export const setMemberToManagerRole = async (memberId) => {
+  
+  console.log(memberId);
+  try {
+    const response = await axios.put(`${API_URL}/users/setMemberToManagerRole/${memberId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || 'Assigning manager role failed';
+  }
+};
