@@ -151,3 +151,88 @@ export const setMemberToManagerRole = async (memberId) => {
     throw error.response?.data || 'Assigning manager role failed';
   }
 };
+
+export const createPaiment = async (paimentData) => {
+  try {
+    const response = await axios.post(`${API_URL}/paiments/createPaimentLog`, paimentData);
+    return response.data;
+  }catch(error){
+    console.log(error);
+    throw error.response?.data ||'creating log failed'
+  }};
+
+export const confirmPaiment = async (paimentId) => {
+  try {
+    const response = await axios.put(`${API_URL}/paiments/confirmPaiment/${paimentId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || 'Payment confirmation failed';
+  }
+};
+
+export const deletePaiment = async (paimentId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/paiments/deletePaiment/${paimentId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || 'Payment deletion failed';
+  }
+};
+
+export const getPaimentsLastSixMonths = async () => {
+  try {
+    const response = await getPaiments();
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const filteredPaiments = response.filter(paiment => {
+      const paimentDate = new Date(paiment.date);
+      return paimentDate >= sixMonthsAgo;
+    });
+    console.log('Filtered payments:', filteredPaiments);
+    return filteredPaiments;
+  } catch (error) {
+    throw error.response?.data || 'Payment retrieval for last six months failed';
+  }
+};
+
+export const getUserSignupsByMonth = async () => {
+  try {
+    const users = await getUsers();
+    const signupsByMonth = {};
+
+    users.forEach(user => {
+      const date = new Date(user.createdAt);
+      const month = date.toISOString().slice(0, 7); // Format: YYYY-MM
+      signupsByMonth[month] = (signupsByMonth[month] || 0) + 1;
+    });
+
+    return signupsByMonth;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getUserSignupsLastSixMonths = async () => {
+  try {
+    const users = await getUsers();
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const filteredUsers = users.filter(user => {
+      const signupDate = new Date(user.createdAt);
+      return signupDate >= sixMonthsAgo;
+    });
+
+    const signupsByMonth = {};
+    filteredUsers.forEach(user => {
+      const date = new Date(user.createdAt);
+      const month = date.toISOString().slice(0, 7); // Format: YYYY-MM
+      signupsByMonth[month] = (signupsByMonth[month] || 0) + 1;
+    });
+
+    return signupsByMonth;
+  } catch (error) {
+    throw error.response?.data || 'User signup retrieval for last six months failed';
+  }
+};

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAllWorkspaces, createBooking } from '../../ApiCalls/apiCalls';
+import { getAllWorkspaces, createBooking, createPaiment } from '../../ApiCalls/apiCalls';
 
 export function UserModalForm({ isOpen, toggleModal }) {
   const [formData, setFormData] = useState({
@@ -26,12 +26,11 @@ export function UserModalForm({ isOpen, toggleModal }) {
 
     fetchWorkspaces();
 
-    // Extract user ID from localStorage
-    const user = JSON.parse(localStorage.getItem('user')); // Adjust this line based on how you store the user information
+    const user = JSON.parse(localStorage.getItem('user'));
     if (user) {
       setFormData((prevData) => ({
         ...prevData,
-        user: user.id, // Adjust this line based on your user object structure
+        user: user.id, 
       }));
     }
   }, []);
@@ -77,9 +76,20 @@ export function UserModalForm({ isOpen, toggleModal }) {
         endTime: new Date(`${formData.date}T${formData.endTime}`),
       };
       await createBooking(bookingData);
+
+      const paimentData = {
+        amount: totalCost,
+        date: new Date(),
+        member: formData.user,
+        space: formData.workspace,
+        dueDate: new Date(`${formData.date}T${formData.endTime}`),
+        paimentStatus: 'Pending',
+      };
+      await createPaiment(paimentData);
+
       toggleModal();
     } catch (error) {
-      console.error('Error creating booking:', error);
+      console.error('Error creating booking or payment:', error);
     }
   };
 

@@ -13,7 +13,7 @@ export function UserNavbar() {
 
   const navLinks = [
     { name: 'Schedule', path: '/user/schedule', icon: calendar },
-    { name: 'Community', path: '/community', icon: community },
+    { name: 'Announcements', path: '/user/announcements', icon: community },
     { name: 'Spaces', path: '/user/spaces', icon: rooms },
   ];
 

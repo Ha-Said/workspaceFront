@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getPaiments } from '../../ApiCalls/apiCalls'; 
+import { getPaiments, confirmPaiment, deletePaiment } from '../../ApiCalls/apiCalls'; 
 
 export default function Billing() {
   const [paymentLogs, setPaymentLogs] = useState([]);
@@ -27,7 +27,26 @@ export default function Billing() {
     setVisiblePayments((prev) => prev + 10);
   };
 
-  // Filter payments based on search query
+  const handleConfirmPayment = (id) => {
+    confirmPaiment(id)
+      .then(() => {
+        setPaymentLogs((prev) =>
+          prev.map((payment) =>
+            payment._id === id ? { ...payment, paimentStatus: 'Paid' } : payment
+          )
+        );
+      })
+      .catch((error) => console.error('Error confirming payment:', error));
+  };
+
+  const handleDeletePayment = (id) => {
+    deletePaiment(id)
+      .then(() => {
+        setPaymentLogs((prev) => prev.filter((payment) => payment._id !== id));
+      })
+      .catch((error) => console.error('Error deleting payment:', error));
+  };
+
   const filteredPayments = paymentLogs.filter(
     (payment) =>
       payment._id.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -65,7 +84,7 @@ export default function Billing() {
                 Payment ID: {payment._id}
               </h5>
               <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                Amount: ${payment.amount}
+                Amount: {payment.amount} DT
               </p>
               <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
                 Due Date: {payment.dueDate}
@@ -79,10 +98,14 @@ export default function Billing() {
               
               {payment.paimentStatus === 'Pending' && (
                 <div>
-                <button className="mr-3 inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                <button 
+                  onClick={() => handleConfirmPayment(payment._id)}
+                  className="mr-3 inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                   Confirm Payment
                 </button>
-                <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                <button 
+                  onClick={() => handleDeletePayment(payment._id)}
+                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
                 Cancel
               </button>
               </div>
@@ -92,12 +115,11 @@ export default function Billing() {
         ))}
       </div>
 
-      {/* Confirmed Payment Logs Section */}
       <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
         Confirmed Payment Logs
       </h2>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-        {/* Search Bar */}
+  
         <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-4 bg-white dark:bg-gray-900">
           <label htmlFor="table-search" className="sr-only">
             Search
@@ -148,7 +170,7 @@ export default function Billing() {
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
               >
                 <td className="px-6 py-4">{payment._id}</td>
-                <td className="px-6 py-4">${payment.amount}</td>
+                <td className="px-6 py-4">{payment.amount} DT </td>
                 <td className="px-6 py-4">{payment.date}</td>
                 <td className="px-6 py-4">{payment.member ? payment.member.name : 'Unknown'}</td>
                 <td className="px-6 py-4">{payment.member ? payment.member.email : 'Unknown'}</td>

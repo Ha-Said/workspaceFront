@@ -25,7 +25,7 @@ export default function LoginPage() {
       if (response.data.user.role === "owner") {
         navigate("/schedule");
       } else if (response.data.user.role === "Member") {
-        navigate("/");
+        navigate("/user");
       } else {
         setError("Invalid user role.");
       }
