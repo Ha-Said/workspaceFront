@@ -2,10 +2,11 @@ import React from "react";
 import { Fade } from "react-awesome-reveal";
 import { Footer } from "../../components/managerComponents/footer";
 import {Button} from "../../components/managerComponents/button"
+import '../../landing.css'
 export  default function Landing() {
   return (
     <div
-      className="leading-normal tracking-normal text-indigo-400 m-6 bg-cover bg-fixed"
+      className="leading-normal tracking-normal text-indigo-400 m-6 bg-cover bg-fixed bg-gradient-to-r from-slate-900 to-slate-700"
       style={{ backgroundImage: "url('header.png')" }}
     >
       <div className="h-full mb-20">
@@ -172,7 +173,7 @@ export  default function Landing() {
                   <img
                     alt="..."
                     className="max-w-full rounded-lg shadow-lg"
-                    src="https://i.postimg.cc/zDKVqk2P/baby-9304011.jpg"
+                    src="https://i.postimg.cc/tTLtNPGf/coworking-wep.webp"
                   />
                 </div>
                 <div className="w-full md:w-5/12 ml-auto mr-auto px-4">

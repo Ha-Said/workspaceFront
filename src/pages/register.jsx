@@ -109,6 +109,14 @@ export default function RegisterPage() {
                     </div>
                   </div>
                 </div>
+                <div className="mt-2">
+                  <a
+                    className="text-sm font-medium text-foreground underline"
+                    href="/login"
+                  >
+                    Login
+                  </a>
+                </div>
                 <div className="mt-4">
                   {/* Success Toast Notification */}
                   {showSuccessToast && (
@@ -148,8 +156,12 @@ export default function RegisterPage() {
                   )}
                 </div>
                 <div className="mt-4 flex items-center justify-end gap-x-2">
-                  <a className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:ring hover:ring-white h-10 px-4 py-2 duration-200" href="/login">Login</a>
-                  <button className="font-semibold hover:bg-black hover:text-white hover:ring hover:ring-white transition duration-300 inline-flex items-center justify-center rounded-md text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-white text-black h-10 px-4 py-2" type="submit">Register</button>
+                  <button
+                    className="font-semibold hover:bg-black hover:text-white hover:ring hover:ring-white transition duration-300 inline-flex items-center justify-center rounded-md text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-white text-black h-10 px-4 py-2"
+                    type="submit"
+                  >
+                    Register
+                  </button>
                 </div>
               </form>
             </div>
