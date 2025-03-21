@@ -50,15 +50,17 @@ export const getPaiments = async () => {
     throw error.response?.data || 'Payment retrieval failed';
   }
 };
-
 export const createBooking = async (bookingData) => {
   try {
     const response = await axios.post(`${API_URL}/booking/createBooking`, bookingData);
     return response.data;
-    } catch (error) {
-    throw error.response?.data || 'Booking creation failed';
+  } catch (error) {
+    if (error.response && error.response.status === 409) {
+      throw new Error('Booking conflict: This workspace is already booked for the selected time. Please refer to the calendar for available slots.');
     }
-}
+    throw new Error('An error occurred while creating the booking.');
+  }
+};
 export const getBookingByMemberId = async (memberId) => {
   try {
     const response = await axios.get(`${API_URL}/booking/getBookingByMemberId/${memberId}`);
