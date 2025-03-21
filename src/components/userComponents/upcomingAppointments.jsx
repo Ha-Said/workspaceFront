@@ -17,7 +17,7 @@ export function UpcomingAppointments() {
         const token = localStorage.getItem("token");
         const user = JSON.parse(localStorage.getItem("user"));
         if (token && user) {
-          const memberId = user.id; // Adjust this line based on your user structure
+          const memberId = user.id; 
 
           const data = await getBookingByMemberId(memberId);
           const upcomingBookings = data.filter(booking => new Date(booking.date) >= new Date());

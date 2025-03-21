@@ -24,14 +24,23 @@ export default function UserCalendar() {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const data = await getAllBookings();
-        const formattedBookings = data.map((booking) => ({
-          id: booking._id,
-          start: booking.startTime.replace('T', ' ').slice(0, 16),
-          end: booking.endTime.replace('T', ' ').slice(0, 16),
-        }));
-        setBookings(formattedBookings);
-        eventsService.set(formattedBookings);
+        const token = localStorage.getItem("token");
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (token && user) {
+          const userId = user.id; // Correctly set userId from localStorage
+          const data = await getAllBookings();
+          console.log(data);
+          const formattedBookings = data.map((booking) => ({
+            id: booking._id,
+            title: `${booking.workspace.name} (${booking.status})`,
+            start: booking.startTime.replace('T', ' ').slice(0, 16),
+            end: booking.endTime.replace('T', ' ').slice(0, 16),
+            calendarId: booking.user._id === userId ? 'user' : 'other',
+          }));
+          setBookings(formattedBookings); 
+          console.log(formattedBookings);
+          eventsService.set(formattedBookings);
+        }
       } catch (error) {
         console.error('Error fetching bookings:', error);
       }
@@ -65,6 +74,34 @@ export default function UserCalendar() {
     views: [createViewDay(), createViewWeek(), createViewMonthGrid(), createViewMonthAgenda()],
     events: bookings,
     plugins: [eventsService],
+    calendars: {
+      user: {
+        colorName: 'user',
+        lightColors: {
+          main: '#0e7a5a',
+          container: '#0b5a42',
+          onContainer: '#ffffff',
+        },
+        darkColors: {
+          main: '#0b5a42',
+          onContainer: '#ffffff',
+          container: '#083f30',
+        },
+      },
+      other: {
+        colorName: 'other',
+        lightColors: {
+          main: '#7a0e1e',
+          container: '#5a0b16',
+          onContainer: '#ffffff',
+        },
+        darkColors: {
+          main: '#5a0b16',
+          onContainer: '#ffffff',
+          container: '#3f0810',
+        },
+      },
+    },
   });
   calendar.setTheme('dark');
 
@@ -78,7 +115,16 @@ export default function UserCalendar() {
 
   return (
     <div className="flex flex-col ">
-      <div className="w-full h-2/3">
+      <div className="w-full h-2/3 relative">
+        {/* Badges for booking categories */}
+        <div className="absolute top-4 right-4 flex space-x-2">
+          <span className="bg-[#0e7a5a] text-white text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-[#0b5a42] dark:text-white">
+            Your Bookings
+          </span>
+          <span className="bg-[#7a0e1e] text-white text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-[#5a0b16] dark:text-white">
+            Other's Bookings
+          </span>
+        </div>
         <div className="shadow-md sm:rounded-lg overflow-hidden h-full">
           <button
             onClick={toggleModal}
@@ -92,12 +138,31 @@ export default function UserCalendar() {
       </div>
       <div className="w-full h-1/3 flex flex-col lg:flex-row">
         <div className="w-full lg:w-1/2 p-4">
-        <h2 className="text-lg font-bold mb-4 text-white">Upcoming Bookings</h2>
-          <UpcomingAppointments />
+          <h2 className="text-lg font-bold mb-4 text-white">Upcoming Bookings</h2>
+          <UpcomingAppointments>
+            {upcomingBookings.slice(0, visibleBookings).map((booking) => (
+              <div key={booking.id} className="flex justify-between items-center mb-2">
+                <span>{booking.title}</span>
+                <button
+                  onClick={() => handleCancel(booking.id)}
+                  className="px-2 py-1 bg-red-500 text-white rounded-lg"
+                >
+                  Cancel
+                </button>
+              </div>
+            ))}
+            {upcomingBookings.length > visibleBookings && (
+              <button
+                onClick={handleShowMore}
+                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg"
+              >
+                Show More
+              </button>
+            )}
+          </UpcomingAppointments>
         </div>
         <div className="w-full lg:w-1/2 p-4">
-        
-        <h2 className="text-lg font-bold mb-4 text-white">Past Bookings</h2>
+          <h2 className="text-lg font-bold mb-4 text-white">Past Bookings</h2>
           <PastAppointments />
         </div>
       </div>

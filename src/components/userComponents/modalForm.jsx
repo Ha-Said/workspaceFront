@@ -43,8 +43,6 @@ export function UserModalForm({ isOpen, toggleModal }) {
   
       if (name === 'workspace') {
         const selectedIndex = e.target.selectedIndex - 1; 
-        console.log("Selected Index:", selectedIndex);
-  
         const selectedWorkspace = workspaces[selectedIndex]; 
         const newPricePerHour = selectedWorkspace ? selectedWorkspace.pricePerHour : 0;
   
@@ -58,7 +56,6 @@ export function UserModalForm({ isOpen, toggleModal }) {
     });
   };
   
-
   const calculateTotalCost = (date, startTime, endTime, pricePerHour) => {
     if (date && startTime && endTime && pricePerHour) {
       const start = new Date(`${date}T${startTime}`);
@@ -70,6 +67,12 @@ export function UserModalForm({ isOpen, toggleModal }) {
         return;
       }
 
+      // Prevent start time after or equal to end time
+      if (start >= end) {
+        alert("Start time must be before end time.");
+        return;
+      }
+
       const duration = (end - start) / (1000 * 60 * 60);
       setTotalCost(duration * pricePerHour);
     }
@@ -77,17 +80,49 @@ export function UserModalForm({ isOpen, toggleModal }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Find the selected workspace object
+    const selectedWorkspace = workspaces.find(
+      (w) => w._id === formData.workspace
+    );
+
+    if (!selectedWorkspace) {
+      alert("Invalid workspace selection.");
+      return;
+    }
+
+    // Convert form times to Date objects
+    const newStart = new Date(`${formData.date}T${formData.startTime}`);
+    const newEnd = new Date(`${formData.date}T${formData.endTime}`);
+
+    // Check that start time is before end time
+    if (newStart >= newEnd) {
+      alert("Start time must be before end time.");
+      return;
+    }
+
+    // Check for overlapping bookings
+    const isOverlapping = selectedWorkspace.availability.some((booking) => {
+      const existingStart = new Date(booking.startTime);
+      const existingEnd = new Date(booking.endTime);
+      return newStart < existingEnd && newEnd > existingStart;
+    });
+
+    if (isOverlapping) {
+      alert("This workspace is already booked for the selected time.");
+      return;
+    }
+
     try {
       const bookingData = {
         ...formData,
-        startTime: new Date(`${formData.date}T${formData.startTime}`),
-        endTime: new Date(`${formData.date}T${formData.endTime}`),
+        startTime: newStart,
+        endTime: newEnd,
       };
       await createBooking(bookingData);
-
       toggleModal();
     } catch (error) {
-      console.error('Error creating booking:', error);
+      console.error("Error creating booking:", error);
     }
   };
 
