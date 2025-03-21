@@ -73,6 +73,9 @@ export function UpcomingAppointments() {
               End Time
             </th>
             <th scope="col" className="px-6 py-3">
+              Status
+            </th>
+            <th scope="col" className="px-6 py-3">
               Action
             </th>
           </tr>
@@ -86,19 +89,36 @@ export function UpcomingAppointments() {
               <td className="px-6 py-4">{new Date(booking.date).toISOString().split('T')[0]}</td>
               <td className="px-6 py-4">{formatTime(booking.startTime)}</td>
               <td className="px-6 py-4">{formatTime(booking.endTime)}</td>
+              <td className="px-6 py-4">{booking.status}</td>
               <td className="px-6 py-4 ">
                 <button
                   onClick={() => handleEditBooking(booking)}
-                  className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 mr-4"
+                  className={`px-4 py-2 text-white rounded mr-4 ${
+                    booking.status === "confirmed" || booking.status === "cancelled" ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+                  }`}
+                  disabled={booking.status === "confirmed" || booking.status === "cancelled"}
+                  title={
+                    booking.status === "confirmed"
+                      ? "Your booking is confirmed. You can no longer update it."
+                      : booking.status === "cancelled"
+                      ? "This booking is cancelled. You cannot edit it."
+                      : ""
+                  }
                 >
                   Edit
                 </button>
-                <button
-                  onClick={() => handleInviteBooking(booking)}
-                  className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
-                >
-                  Invite
-                </button>
+                {booking.status !== "pending" && (
+                  <button
+                    onClick={() => handleInviteBooking(booking)}
+                    className={`px-4 py-2 text-white rounded ${
+                      booking.status === "cancelled" ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+                    }`}
+                    disabled={booking.status === "cancelled"}
+                    title={booking.status === "cancelled" ? "This booking is cancelled. You cannot send an invite." : ""}
+                  >
+                    Invite
+                  </button>
+                )}
               </td>
             </tr>
           ))}

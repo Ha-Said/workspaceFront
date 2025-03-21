@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAllWorkspaces, createBooking, createPaiment } from '../../ApiCalls/apiCalls';
+import { getAllWorkspaces, createBooking } from '../../ApiCalls/apiCalls';
 
 export function UserModalForm({ isOpen, toggleModal }) {
   const [formData, setFormData] = useState({
@@ -34,6 +34,7 @@ export function UserModalForm({ isOpen, toggleModal }) {
       }));
     }
   }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
   
@@ -62,6 +63,13 @@ export function UserModalForm({ isOpen, toggleModal }) {
     if (date && startTime && endTime && pricePerHour) {
       const start = new Date(`${date}T${startTime}`);
       const end = new Date(`${date}T${endTime}`);
+      const now = new Date();
+
+      if (start < now || end < now) {
+        alert("Date and time cannot be in the past.");
+        return;
+      }
+
       const duration = (end - start) / (1000 * 60 * 60);
       setTotalCost(duration * pricePerHour);
     }
@@ -77,19 +85,9 @@ export function UserModalForm({ isOpen, toggleModal }) {
       };
       await createBooking(bookingData);
 
-      const paimentData = {
-        amount: totalCost,
-        date: new Date(),
-        member: formData.user,
-        space: formData.workspace,
-        dueDate: new Date(`${formData.date}T${formData.endTime}`),
-        paimentStatus: 'Pending',
-      };
-      await createPaiment(paimentData);
-
       toggleModal();
     } catch (error) {
-      console.error('Error creating booking or payment:', error);
+      console.error('Error creating booking:', error);
     }
   };
 

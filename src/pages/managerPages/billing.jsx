@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getPaiments, confirmPaiment, deletePaiment } from '../../ApiCalls/apiCalls'; 
+import { getPaiments, confirmPaiment, cancelPaiment } from '../../ApiCalls/apiCalls'; 
 
 export default function Billing() {
   const [paymentLogs, setPaymentLogs] = useState([]);
@@ -29,22 +29,34 @@ export default function Billing() {
 
   const handleConfirmPayment = (id) => {
     confirmPaiment(id)
-      .then(() => {
-        setPaymentLogs((prev) =>
-          prev.map((payment) =>
-            payment._id === id ? { ...payment, paimentStatus: 'Paid' } : payment
-          )
-        );
+      .then((response) => {
+        if (response.success) {
+          setPaymentLogs((prev) =>
+            prev.map((payment) =>
+              payment._id === id ? { ...payment, paimentStatus: 'Paid' } : payment
+            )
+          );
+        } else {
+          console.error('Payment confirmation failed:', response.message);
+        }
       })
       .catch((error) => console.error('Error confirming payment:', error));
   };
 
   const handleDeletePayment = (id) => {
-    deletePaiment(id)
-      .then(() => {
-        setPaymentLogs((prev) => prev.filter((payment) => payment._id !== id));
+    cancelPaiment(id)
+      .then((response) => {
+        if (response.success) {
+          setPaymentLogs((prev) =>
+            prev.map((payment) =>
+              payment._id === id ? { ...payment, paimentStatus: 'Cancelled' } : payment
+            )
+          );
+        } else {
+          console.error('Payment cancellation failed:', response.message);
+        }
       })
-      .catch((error) => console.error('Error deleting payment:', error));
+      .catch((error) => console.error('Error canceling payment:', error));
   };
 
   const filteredPayments = paymentLogs.filter(
@@ -59,14 +71,19 @@ export default function Billing() {
   const pendingPayments = filteredPayments.filter(
     (payment) =>
       payment.paimentStatus === 'Pending' ||
-      payment.paimentStatus === 'Pending Confirmation'
+      payment.paimentStatus === 'pending'
   );
   const confirmedPayments = filteredPayments.filter(
     (payment) => payment.paimentStatus === 'Paid'
   );
 
+  const canceledPayments = filteredPayments.filter(
+    (payment) => payment.paimentStatus === 'Cancelled'
+  );
+
   console.log('Pending payments:', pendingPayments); 
   console.log('Confirmed payments:', confirmedPayments); 
+  console.log('Canceled payments:', canceledPayments);
 
   return (
     <div className="p-6">
@@ -161,6 +178,7 @@ export default function Billing() {
               <th scope="col" className="px-6 py-3">Date</th>
               <th scope="col" className="px-6 py-3">Payer Name</th>
               <th scope="col" className="px-6 py-3">Payer Email</th>
+              <th scope="col" className="px-6 py-3">Payment Status</th>
             </tr>
           </thead>
           <tbody>
@@ -174,6 +192,7 @@ export default function Billing() {
                 <td className="px-6 py-4">{payment.date}</td>
                 <td className="px-6 py-4">{payment.member ? payment.member.name : 'Unknown'}</td>
                 <td className="px-6 py-4">{payment.member ? payment.member.email : 'Unknown'}</td>
+                <td className="px-6 py-4">{payment.paimentStatus}</td>
               </tr>
             ))}
           </tbody>
@@ -188,6 +207,72 @@ export default function Billing() {
             </button>
           </div>
         )}
+      </div>
+
+      <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
+        Canceled Payment Logs
+      </h2>
+      <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" className="px-6 py-3">Payment ID</th>
+              <th scope="col" className="px-6 py-3">Amount</th>
+              <th scope="col" className="px-6 py-3">Date</th>
+              <th scope="col" className="px-6 py-3">Payer Name</th>
+              <th scope="col" className="px-6 py-3">Payer Email</th>
+              <th scope="col" className="px-6 py-3">Payment Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {canceledPayments.map((payment) => (
+              <tr
+                key={payment._id}
+                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+              >
+                <td className="px-6 py-4">{payment._id}</td>
+                <td className="px-6 py-4">{payment.amount} DT</td>
+                <td className="px-6 py-4">{payment.date}</td>
+                <td className="px-6 py-4">{payment.member ? payment.member.name : 'Unknown'}</td>
+                <td className="px-6 py-4">{payment.member ? payment.member.email : 'Unknown'}</td>
+                <td className="px-6 py-4">{payment.paimentStatus}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
+        All Payment Logs
+      </h2>
+      <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" className="px-6 py-3">Payment ID</th>
+              <th scope="col" className="px-6 py-3">Amount</th>
+              <th scope="col" className="px-6 py-3">Date</th>
+              <th scope="col" className="px-6 py-3">Payer Name</th>
+              <th scope="col" className="px-6 py-3">Payer Email</th>
+              <th scope="col" className="px-6 py-3">Payment Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredPayments.map((payment) => (
+              <tr
+                key={payment._id}
+                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+              >
+                <td className="px-6 py-4">{payment._id}</td>
+                <td className="px-6 py-4">{payment.amount} DT</td>
+                <td className="px-6 py-4">{payment.date}</td>
+                <td className="px-6 py-4">{payment.member ? payment.member.name : 'Unknown'}</td>
+                <td className="px-6 py-4">{payment.member ? payment.member.email : 'Unknown'}</td>
+                <td className="px-6 py-4">{payment.paimentStatus}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

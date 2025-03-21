@@ -164,9 +164,9 @@ export const createPaiment = async (paimentData) => {
 export const confirmPaiment = async (paimentId) => {
   try {
     const response = await axios.put(`${API_URL}/paiments/confirmPaiment/${paimentId}`);
-    return response.data;
+    return { success: true, data: response.data };
   } catch (error) {
-    throw error.response?.data || 'Payment confirmation failed';
+    return { success: false, message: error.response?.data || 'Payment confirmation failed' };
   }
 };
 
@@ -176,6 +176,15 @@ export const deletePaiment = async (paimentId) => {
     return response.data;
   } catch (error) {
     throw error.response?.data || 'Payment deletion failed';
+  }
+};
+
+export const cancelPaiment = async (paimentId) => {
+  try {
+    const response = await axios.put(`${API_URL}/paiments/cancelPaiment/${paimentId}`);
+    return { success: true, data: response.data };
+  } catch (error) {
+    return { success: false, message: error.response?.data || 'Payment cancellation failed' };
   }
 };
 
@@ -234,5 +243,42 @@ export const getUserSignupsLastSixMonths = async () => {
     return signupsByMonth;
   } catch (error) {
     throw error.response?.data || 'User signup retrieval for last six months failed';
+  }
+};
+
+export const getWorkspaceById = async (workspaceId) => {
+  try {
+    const response = await axios.get(`${API_URL}/space/getWorkspaceById/${workspaceId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || 'Workspace retrieval by ID failed';
+  }
+};
+
+export const setBookingCancelled = async (bookingId) => {
+  try {
+    const response = await axios.put(`${API_URL}/booking/setBookingCancelled/${bookingId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || 'Booking cancellation failed';
+  }
+};
+
+export const setBookingConfirmed = async (bookingId) => {
+  try {
+    const response = await axios.put(`${API_URL}/booking/setBookingConfirmed/${bookingId}`);
+    alert(`Booking with ID ${bookingId} has been successfully confirmed.`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || 'Booking confirmation failed';
+  }
+};
+
+export const addAvailabilityToWorkspace = async (workspaceId, availabilityData) => {
+  try {
+    const response = await axios.put(`${API_URL}/space/addAvailability/${workspaceId}`, availabilityData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || 'Adding availability to workspace failed';
   }
 };
