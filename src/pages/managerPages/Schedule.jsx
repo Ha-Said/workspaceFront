@@ -12,7 +12,7 @@ import { getAllBookings } from '../../ApiCalls/apiCalls';
 import '@schedule-x/theme-default/dist/index.css';
 import UpcomingBookingsTable from '../../components/managerComponents/upcomingTable';
 import ConfirmedBookings from '../../components/managerComponents/confirmedBookings';
-
+import BookingDetails from '../../components/managerComponents/bookingInfoCard';
 export default function CalendarApp() {
   const [bookings, setBookings] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -60,6 +60,7 @@ export default function CalendarApp() {
           <ConfirmedBookings />
         </div>
       </div>
+      
     </div>
   );
 }

@@ -214,7 +214,7 @@ export const getUserSignupsByMonth = async () => {
 
     users.forEach(user => {
       const date = new Date(user.createdAt);
-      const month = date.toISOString().slice(0, 7); // Format: YYYY-MM
+      const month = date.toISOString().slice(0, 7);
       signupsByMonth[month] = (signupsByMonth[month] || 0) + 1;
     });
 
@@ -238,7 +238,7 @@ export const getUserSignupsLastSixMonths = async () => {
     const signupsByMonth = {};
     filteredUsers.forEach(user => {
       const date = new Date(user.createdAt);
-      const month = date.toISOString().slice(0, 7); // Format: YYYY-MM
+      const month = date.toISOString().slice(0, 7);
       signupsByMonth[month] = (signupsByMonth[month] || 0) + 1;
     });
 
@@ -284,3 +284,11 @@ export const addAvailabilityToWorkspace = async (workspaceId, availabilityData) 
     throw error.response?.data || 'Adding availability to workspace failed';
   }
 };
+
+export const getBookingById = async (bookingId)  =>{
+  try {
+    const response = await axios.get(`${API_URL}/booking/getBookingById/${bookingId}`);
+    return response.data;
+  }catch(error){
+    console.log(error);
+}}

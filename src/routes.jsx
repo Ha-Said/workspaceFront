@@ -67,11 +67,8 @@ function Routing() {
           <Route element={<UserDashboard/>}>
           
             <Route path="/user" element={<UserCalendar />} />
-            <Route path="/user/community" element={<Community />} />
             <Route path="/user/schedule" element={<UserCalendar />} />
-            <Route path="/user/reports" element={<Reports />} />
             <Route path="/editProfile/:email" element={<AccountForm />} />
-            <Route path="/user/billing" element={<Billing />} />
             <Route path="/user/spaces" element={<UserSpaces />} />
             <Route path="/user/settings" element={<Settings />} />
             <Route path="/user/profile" element={<Profile />} />

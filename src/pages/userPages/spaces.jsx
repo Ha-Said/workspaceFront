@@ -3,7 +3,6 @@ import { getAllWorkspaces } from "../../ApiCalls/apiCalls";
 import { RoomForm } from "../../components/userComponents/modalRoomForm";
 import { SpaceModal } from "../../components/userComponents/spaceModal";
 
-// New FilterPopup component for better separation and UX
 function FilterPopup({
   isOpen,
   onClose,
@@ -15,7 +14,6 @@ function FilterPopup({
 }) {
   const popupRef = useRef(null);
 
-  // Close the popup if the user clicks outside of it
   useEffect(() => {
     function handleClickOutside(event) {
       if (popupRef.current && !popupRef.current.contains(event.target)) {

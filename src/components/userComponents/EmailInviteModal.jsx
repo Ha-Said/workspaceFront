@@ -7,6 +7,7 @@ export function EmailForm({ isOpen, toggleModal, booking }) {
   const [formData, setFormData] = useState({
     user: '',
   });
+  const [username, setUsername]=useState('');
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -18,6 +19,9 @@ export function EmailForm({ isOpen, toggleModal, booking }) {
             ...prevData,
             user: user.id,
           }));
+          
+     setUsername(user.name);
+     console.log(username)
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -40,27 +44,25 @@ export function EmailForm({ isOpen, toggleModal, booking }) {
   const handleRemoveEmail = (index) => {
     const newEmails = emails.filter((_, i) => i !== index);
     setEmails(newEmails);
-  };
-  const handleSubmit = async (e) => {
+  };const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       const organizerEmail = user.email;
-  
-      // Ensure proper date format (YYYY-MM-DD)
+      
       const formatDate = (date) => new Date(date).toISOString().split("T")[0];
-  
+      
       const bookingData = {
-        emails: emails.join(' '), // Join emails with commas instead of spaces
+        emails: emails.join(" "),
         startDate: formatDate(booking.startTime),
         endDate: formatDate(booking.endTime),
-        message: message || "This is a test booking event.",
-        organizerEmail
+        message: message || "This is an auto generated email by our Coworking website",
+        organizerEmail,
+        username: user.name,      
+        location: booking.workspace.name + " " + booking.workspace.location,
       };
   
-      console.log(bookingData); // Debug log
       await sendBooking(bookingData);
-      console.log("Booking sent successfully");
       toggleModal();
     } catch (error) {
       console.error("Error sending booking:", error);
