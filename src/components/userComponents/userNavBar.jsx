@@ -4,6 +4,7 @@ import calendar from '../../assets/calendar.svg';
 import community from '../../assets/community.svg';
 import rooms from '../../assets/room.svg';
 import {logoutUser} from '../../ApiCalls/apiCalls';
+import NotificationComponent from './notification'
 export function UserNavbar() {
   const location = useLocation();
   const currentPath = location.pathname;
@@ -33,7 +34,9 @@ export function UserNavbar() {
         const storedUser = JSON.parse(localStorage.getItem('user'));
         if (storedUser) {
           setUser(storedUser);
+       
         }
+        
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
@@ -71,7 +74,11 @@ export function UserNavbar() {
               <h1 className="text-lg font-semibold text-gray-900 dark:text-white">{activePageTitle}</h1>
             </div>
             <div className="flex items-center">
+            <NotificationComponent
+              userId = {user?.id}
+              />
               <div className="flex items-center ml-3">
+                
                 <div>
                   <button
                     type="button"
@@ -89,6 +96,8 @@ export function UserNavbar() {
                     />
                   </button>
                 </div>
+                
+                
                 <div
                   className={`z-50 mt-2 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm dark:bg-gray-700 dark:divide-gray-600 ${
                     isUserMenuOpen ? 'block' : 'hidden'

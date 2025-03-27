@@ -9,8 +9,14 @@ function FilterPopup({
   onApply,
   priceFilter,
   capacityFilter,
+  dateFilter,
+  startTimeFilter,
+  endTimeFilter,
   setPriceFilter,
   setCapacityFilter,
+  setDateFilter,
+  setStartTimeFilter,
+  setEndTimeFilter,
 }) {
   const popupRef = useRef(null);
 
@@ -33,7 +39,7 @@ function FilterPopup({
   return (
     <div
       ref={popupRef}
-      className="absolute z-10 w-64 p-6 bg-white rounded-lg shadow-xl dark:bg-gray-800 mt-10 border border-gray-300 dark:border-gray-700"
+      className="absolute z-10 w-80 p-6 bg-white rounded-lg shadow-xl dark:bg-gray-800 mt-10 border border-gray-300 dark:border-gray-700"
     >
       <div className="flex items-center justify-between mb-4">
         <h6 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -87,11 +93,49 @@ function FilterPopup({
             className="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded focus:ring-primary-500 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           />
         </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Date
+          </label>
+          <input
+            type="date"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            className="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded focus:ring-primary-500 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Start Time
+            </label>
+            <input
+              type="time"
+              value={startTimeFilter}
+              onChange={(e) => setStartTimeFilter(e.target.value)}
+              className="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded focus:ring-primary-500 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              End Time
+            </label>
+            <input
+              type="time"
+              value={endTimeFilter}
+              onChange={(e) => setEndTimeFilter(e.target.value)}
+              className="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded focus:ring-primary-500 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+          </div>
+        </div>
         <div className="flex justify-between mt-4">
           <button
             onClick={() => {
               setPriceFilter("");
               setCapacityFilter("");
+              setDateFilter("");
+              setStartTimeFilter("");
+              setEndTimeFilter("");
             }}
             className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
           >
@@ -118,6 +162,9 @@ export default function UserSpaces() {
   const [filteredWorkspaces, setFilteredWorkspaces] = useState([]);
   const [priceFilter, setPriceFilter] = useState("");
   const [capacityFilter, setCapacityFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+  const [startTimeFilter, setStartTimeFilter] = useState("");
+  const [endTimeFilter, setEndTimeFilter] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Function to close the modal
@@ -158,6 +205,7 @@ export default function UserSpaces() {
             return acc;
           }, {});
           setCurrentImageIndex(initialImageIndex);
+          setFilteredWorkspaces(data); // set initial filtered workspaces to all workspaces
         } else {
           console.error("Expected an array but got:", data);
         }
@@ -165,28 +213,72 @@ export default function UserSpaces() {
       .catch((error) => console.error("Error fetching workspaces:", error));
   }, []);
 
-  // Filter workspaces based on price and capacity
+  // Check if a workspace is available for the selected time slot
+  const isWorkspaceAvailable = (workspace) => {
+    if (!dateFilter || !startTimeFilter || !endTimeFilter) {
+      return true;
+    }
+
+    const requestDate = new Date(dateFilter);
+    const [startHours, startMinutes] = startTimeFilter.split(":").map(Number);
+    const [endHours, endMinutes] = endTimeFilter.split(":").map(Number);
+
+    const requestStart = new Date(requestDate);
+    requestStart.setHours(startHours, startMinutes, 0, 0);
+
+    const requestEnd = new Date(requestDate);
+    requestEnd.setHours(endHours, endMinutes, 0, 0);
+
+    if (requestEnd <= requestStart) {
+      return false;
+    }
+
+    if (!workspace.availability || !Array.isArray(workspace.availability) || workspace.availability.length === 0) {
+      return true;
+    }
+
+    for (const booking of workspace.availability) {
+      const bookingStart = new Date(booking.startTime);
+      const bookingEnd = new Date(booking.endTime);
+
+      const isSameDate =
+        requestDate.getFullYear() === bookingStart.getFullYear() &&
+        requestDate.getMonth() === bookingStart.getMonth() &&
+        requestDate.getDate() === bookingStart.getDate();
+
+      if (!isSameDate) {
+        continue;
+      }
+
+      const hasOverlap = requestStart < bookingEnd && requestEnd > bookingStart;
+      if (hasOverlap) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  // Filter workspaces based on price, capacity, and availability
   const filterWorkspaces = () => {
     const filtered = workspaces.filter((workspace) => {
       const matchesPrice =
         priceFilter === "" || workspace.pricePerHour <= parseFloat(priceFilter);
       const matchesCapacity =
         capacityFilter === "" || workspace.capacity >= parseInt(capacityFilter);
-      return matchesPrice && matchesCapacity;
+      const matchesAvailability = isWorkspaceAvailable(workspace);
+
+      return matchesPrice && matchesCapacity && matchesAvailability;
     });
+
     setFilteredWorkspaces(filtered);
     setIsDropdownOpen(false);
   };
 
-  // Reapply filters when workspaces change
-  useEffect(() => {
-    filterWorkspaces();
-  }, [workspaces]);
-
   return (
     <div className="relative">
       {/* Filters */}
-      <div className="flex   p-4 relative">
+      <div className="flex p-4 relative">
         <button
           onClick={() => setIsDropdownOpen((prev) => !prev)}
           className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2.5 inline-flex items-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
@@ -201,12 +293,7 @@ export default function UserSpaces() {
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M19 9l-7 7-7-7"
-            ></path>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
           </svg>
         </button>
         <FilterPopup
@@ -215,10 +302,76 @@ export default function UserSpaces() {
           onApply={filterWorkspaces}
           priceFilter={priceFilter}
           capacityFilter={capacityFilter}
+          dateFilter={dateFilter}
+          startTimeFilter={startTimeFilter}
+          endTimeFilter={endTimeFilter}
           setPriceFilter={setPriceFilter}
           setCapacityFilter={setCapacityFilter}
+          setDateFilter={setDateFilter}
+          setStartTimeFilter={setStartTimeFilter}
+          setEndTimeFilter={setEndTimeFilter}
         />
       </div>
+
+      {/* Active Filters Display */}
+      {(dateFilter || priceFilter || capacityFilter) && (
+        <div className="flex flex-wrap items-center gap-2 px-4 mb-4">
+          <span className="font-medium text-gray-700 dark:text-gray-300">Active Filters:</span>
+          {dateFilter && (
+            <span className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full dark:bg-blue-900 dark:text-blue-200">
+              Date: {new Date(dateFilter).toLocaleDateString()}
+            </span>
+          )}
+          {startTimeFilter && endTimeFilter && (
+            <span className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full dark:bg-blue-900 dark:text-blue-200">
+              Time: {startTimeFilter} - {endTimeFilter}
+            </span>
+          )}
+          {priceFilter && (
+            <span className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full dark:bg-blue-900 dark:text-blue-200">
+              Max Price: {priceFilter} DT
+            </span>
+          )}
+          {capacityFilter && (
+            <span className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full dark:bg-blue-900 dark:text-blue-200">
+              Min Capacity: {capacityFilter}
+            </span>
+          )}
+          <button
+            onClick={() => {
+              setPriceFilter("");
+              setCapacityFilter("");
+              setDateFilter("");
+              setStartTimeFilter("");
+              setEndTimeFilter("");
+            }}
+            className="px-2 py-1 text-xs text-red-600 bg-red-100 rounded-full hover:bg-red-200 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
+          >
+            Clear All
+          </button>
+        </div>
+      )}
+
+      {/* No Results Message */}
+      {filteredWorkspaces.length === 0 && (
+        <div className="p-8 text-center">
+          <p className="text-lg text-gray-600 dark:text-gray-400">
+            No workspaces match your filter criteria.
+          </p>
+          <button
+            onClick={() => {
+              setPriceFilter("");
+              setCapacityFilter("");
+              setDateFilter("");
+              setStartTimeFilter("");
+              setEndTimeFilter("");
+            }}
+            className="mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded hover:bg-blue-800"
+          >
+            Clear Filters
+          </button>
+        </div>
+      )}
 
       {/* Workspace list */}
       <div className="flex flex-wrap gap-6">

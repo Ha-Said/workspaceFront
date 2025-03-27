@@ -1,21 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import NotificationComponent from './notification';
 
 export function Navbar() {
   const location = useLocation();
   const currentPath = location.pathname;
-
-  // Define your nav links with names and paths.
   const navLinks = [
     { name: 'Schedule', path: '/manager/schedule' },
     { name: 'Community', path: '/manager/community' },
     { name: 'Rooms', path: '/manager/rooms' },
     { name: 'Billing ', path: '/manager/billing ' },
     { name: 'Reports', path: '/manager/reports' },
-    {name: 'Announcements', path: '/manager/announcements'},
+    { name: 'Announcements', path: '/manager/announcements' },
   ];
 
-  // If the current path doesn’t match any link, you can fall back to a default name.
+  const [user, setUser] = useState(null);
   const activePage = navLinks.find(link => link.path === currentPath);
   const activePageTitle = activePage ? activePage.name : 'Dashboard';
 
@@ -24,6 +23,21 @@ export function Navbar() {
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const toggleProfileMenu = () => setIsProfileMenuOpen(!isProfileMenuOpen);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser) {
+          setUser(storedUser);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   return (
     <div className="min-h-full">
@@ -57,28 +71,16 @@ export function Navbar() {
                 </div>
               </div>
             </div>
+
             {/* Profile and Notification Buttons */}
             <div className="hidden md:block">
               <div className="ml-4 flex items-center md:ml-6">
                 {/* Notification Button */}
-                <button
-                  type="button"
-                  className="relative inline-flex items-center p-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 16"
-                  >
-                    <path d="m10.036 8.278 9.258-7.79A1.979 1.979 0 0 0 18 0H2A1.987 1.987 0 0 0 .641.541l9.395 7.737Z" />
-                    <path d="M11.241 9.817c-.36.275-.801.425-1.255.427-.428 0-.845-.138-1.187-.395L0 2.6V14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2.5l-8.759 7.317Z" />
-                  </svg>
-                  <span className="sr-only">Notifications</span>
-                  <div className="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1.5 -end-1.5 dark:border-gray-900">
-                  </div>
-                </button>
+                <div className="z-50">
+                  {/* Only render the NotificationComponent if user is available */}
+                  {user && <NotificationComponent userId={user.id} />}
+                </div>
+
                 {/* Profile Menu */}
                 <div className="relative ml-3">
                   <button
@@ -130,6 +132,7 @@ export function Navbar() {
                 </div>
               </div>
             </div>
+
             {/* Mobile menu button */}
             <div className="-mr-2 flex md:hidden">
               <button
@@ -224,8 +227,6 @@ export function Navbar() {
           </div>
         </div>
       </nav>
-
-      
 
       <main>
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">

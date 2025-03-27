@@ -291,4 +291,20 @@ export const getBookingById = async (bookingId)  =>{
     return response.data;
   }catch(error){
     console.log(error);
+}};
+
+export const markNotificationSeen= async (notificationid)=>{
+  try{
+    const response =await axios.put(`${API_URL}/notification/markNotificationSeen/${notificationid}`);
+    return response.data;
+}catch(error){
+  console.log(error);
 }}
+export const getNotifications= async (userId)=>{
+  try {
+    const response = await axios.get(`${API_URL}/notification/getNotifications/${userId}`);
+    return response.data;
+  }catch(error){
+    console.log(error);
+  }
+}
