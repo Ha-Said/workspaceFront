@@ -58,7 +58,7 @@ function Routing() {
           <Route path='/manager' element={<CalendarApp />} />
             <Route path='/manager/community' element={<Community />} />
             <Route path='/manager/schedule' element={<CalendarApp />} />
-            <Route path='/manager/rooms' element={<Spaces/>}/>
+            <Route path='/manager/spaces' element={<Spaces/>}/>
             <Route path='/manager/reports' element={<Reports/>} />
             <Route path="/editProfile/:email" element={<AccountForm />} />
             <Route path='/manager/billing' element={<Billing/>}/>

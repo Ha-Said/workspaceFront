@@ -74,9 +74,7 @@ export function UserNavbar() {
               <h1 className="text-lg font-semibold text-gray-900 dark:text-white">{activePageTitle}</h1>
             </div>
             <div className="flex items-center">
-            <NotificationComponent
-              userId = {user?.id}
-              />
+         &&&
               <div className="flex items-center ml-3">
                 
                 <div>

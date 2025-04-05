@@ -29,6 +29,14 @@ export const getAllWorkspaces = async () => {
   
   }
 };
+export const createWorkspace = async (workspaceData) => {
+  try {
+    const response = await axios.post(`${API_URL}/space/createWorkspace`,workspaceData);
+    return response.data; 
+  } catch (error) {
+    throw error.response?.data || 'Workspace creation failed'; 
+  }
+};
 export const getAllBookings = async () => {
   try {
     const response = await axios.get(`${API_URL}/booking/getAllBookings`);

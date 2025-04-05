@@ -8,7 +8,7 @@ export function Navbar() {
   const navLinks = [
     { name: 'Schedule', path: '/manager/schedule' },
     { name: 'Community', path: '/manager/community' },
-    { name: 'Rooms', path: '/manager/rooms' },
+    { name: 'Spaces', path: '/manager/spaces' },
     { name: 'Billing ', path: '/manager/billing ' },
     { name: 'Reports', path: '/manager/reports' },
     { name: 'Announcements', path: '/manager/announcements' },
