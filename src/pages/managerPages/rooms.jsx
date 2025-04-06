@@ -27,7 +27,11 @@ export default function Spaces() {
       {Array.isArray(workspaces) && workspaces.map(workspace => (
         <div key={workspace._id} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
           <a href="#">
-            <img className="rounded-t-lg" src={workspace.photo} alt={workspace.name} />
+            <img 
+              className="rounded-t-lg" 
+              src={workspace.photos && workspace.photos.length > 0 ? workspace.photos[0] : '/uploads/placeholder.jpg'} 
+              alt={workspace.name} 
+            />
           </a>
           <div className="p-5">
             <a href="#">

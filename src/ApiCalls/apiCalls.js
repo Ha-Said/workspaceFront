@@ -18,7 +18,15 @@ export const getUsers = async () => {
     throw error.response?.data || 'User retrieval failed'; 
   }
 };
-
+export const updateworkspace = async(workspaceId, workspaceData) => {
+  try {
+    const response = await axios.put(`${API_URL}/space/updateWorkspace/${workspaceId}`, workspaceData);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error.response?.data || 'Workspace update failed';
+  }
+};
 export const getAllWorkspaces = async () => {
   try {
     const response = await axios.get(`${API_URL}/space/getAllWorkspaces`);
@@ -31,12 +39,15 @@ export const getAllWorkspaces = async () => {
 };
 export const createWorkspace = async (workspaceData) => {
   try {
-    const response = await axios.post(`${API_URL}/space/createWorkspace`,workspaceData);
+    const response = await axios.post(`${API_URL}/space/createWorkspace`, workspaceData);
     return response.data; 
   } catch (error) {
+    console.log(error); 
     throw error.response?.data || 'Workspace creation failed'; 
+
   }
 };
+
 export const getAllBookings = async () => {
   try {
     const response = await axios.get(`${API_URL}/booking/getAllBookings`);

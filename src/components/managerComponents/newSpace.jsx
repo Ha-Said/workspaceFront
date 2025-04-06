@@ -1,81 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import { createWorkspace } from '../../ApiCalls/apiCalls';
+import axios from 'axios';
 
 export function ModalForm({ isOpen, toggleModal }) {
-  const [user, setUser] = useState(null); // Add user state
+  const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
-    type: 'desk', // Default value from enum
-    capacity: '',
-    amenities: [], // Changed to an array
+    type: 'desk',
+    capacity: '2',
+    amenities: '',
     location: '',
     pricePerHour: '',
     photos: [],
   });
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const storedUser = JSON.parse(localStorage.getItem('user'));
-        if (storedUser) {
-          setUser(storedUser);
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-
-    fetchUser();
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (storedUser) {
+      setUser(storedUser);
+    }
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: name === 'amenities' ? value.split(',').map(item => item.trim()) : value, // Handle amenities as an array
-    });
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleFileChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       photos: Array.from(e.target.files),
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const workspaceData = new FormData();
-
-    console.log('Name:', formData.name);
-    workspaceData.append('name', formData.name);
-
-    console.log('Type:', formData.type);
-    workspaceData.append('type', formData.type);
-
-    console.log('Capacity:', formData.capacity);
-    workspaceData.append('capacity', formData.capacity);
-
-    console.log('Amenities:', formData.amenities);
-    workspaceData.append('amenities', JSON.stringify(formData.amenities)); // Pass amenities as JSON
-
-    console.log('Location:', formData.location);
-    workspaceData.append('location', formData.location);
-
-    console.log('Price Per Hour:', formData.pricePerHour);
-    workspaceData.append('pricePerHour', formData.pricePerHour);
-
-    console.log('Photos:', formData.photos);
-    formData.photos.forEach(file => workspaceData.append('photos', file)); // Append photos correctly
-
-    if (user) {
-      console.log('User ID:', user.id);
-      workspaceData.append('userId', user.id); 
-    }
 
     try {
-      await createWorkspace(workspaceData);
-      console.log('Workspace created successfully');
+      // Create a FormData object to send text fields and files together.
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('type', formData.type);
+      formDataToSend.append('capacity', formData.capacity);
+      // Sending amenities as comma-separated string or you can send JSON if backend supports it.
+      formDataToSend.append('amenities', formData.amenities);
+      formDataToSend.append('location', formData.location);
+      formDataToSend.append('pricePerHour', formData.pricePerHour);
+      formDataToSend.append('userId', user?.id);
+
+      // Append each photo with the same key "photos"
+      formData.photos.forEach((photo) => {
+        formDataToSend.append('photos', photo);
+      });
+
+      // Call the createWorkspace method passing the FormData.
+      // Ensure that your createWorkspace method in apiCalls is updated to send a multipart/form-data request.
+      const { data: createdWorkspace } = await createWorkspace(formDataToSend);
+      console.log('Workspace created successfully', createdWorkspace);
       toggleModal();
     } catch (error) {
       console.error('Error creating workspace:', error.response?.data || error.message);
@@ -85,158 +69,46 @@ export function ModalForm({ isOpen, toggleModal }) {
   return (
     <>
       {isOpen && (
-        <div
-          id="crud-modal"
-          tabIndex="-1"
-          aria-hidden="true"
-          className="fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full bg-black bg-opacity-50"
-        >
+        <div className="fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full bg-black bg-opacity-50">
           <div className="relative p-4 w-full max-w-md max-h-full">
             <div className="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
-              <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+              <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-200 dark:border-gray-600">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                   Create New Workspace
                 </h3>
                 <button
                   type="button"
-                  className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
                   onClick={toggleModal}
+                  className="text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg text-sm w-8 h-8 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600"
                 >
-                  <svg
-                    className="w-3 h-3"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 14 14"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                    />
+                  <svg className="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                   </svg>
-                  <span className="sr-only">Close modal</span>
                 </button>
               </div>
               <form className="p-4 md:p-5" onSubmit={handleSubmit}>
                 <div className="grid gap-4 mb-4">
+                  <InputField label="Workspace Name" name="name" value={formData.name} onChange={handleChange} required />
+                  <SelectField
+                    label="Type"
+                    name="type"
+                    value={formData.type}
+                    onChange={handleChange}
+                    options={['desk', 'meetingRoom', 'privateOffice']}
+                  />
+                  <InputField label="Capacity" name="capacity" type="number" value={formData.capacity} onChange={handleChange} required />
+                  <InputField
+                    label="Amenities"
+                    name="amenities"
+                    value={formData.amenities}
+                    onChange={handleChange}
+                    placeholder="Comma-separated"
+                    required
+                  />
+                  <InputField label="Location" name="location" value={formData.location} onChange={handleChange} required />
+                  <InputField label="Price Per Hour" name="pricePerHour" type="number" value={formData.pricePerHour} onChange={handleChange} required />
                   <div>
-                    <label
-                      htmlFor="name"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Workspace Name
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      id="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                      placeholder="Enter workspace name"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="type"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Type
-                    </label>
-                    <select
-                      name="type"
-                      id="type"
-                      value={formData.type}
-                      onChange={handleChange}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                      required
-                    >
-                      <option value="desk">Desk</option>
-                      <option value="meetingRoom">Meeting Room</option>
-                      <option value="privateOffice">Private Office</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="capacity"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Capacity
-                    </label>
-                    <input
-                      type="number"
-                      name="capacity"
-                      id="capacity"
-                      value={formData.capacity}
-                      onChange={handleChange}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                      placeholder="Enter capacity"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="amenities"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Amenities
-                    </label>
-                    <input
-                      type="text"
-                      name="amenities"
-                      id="amenities"
-                      value={formData.amenities.join(', ')} // Display amenities as a comma-separated string
-                      onChange={handleChange}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                      placeholder="Enter amenities (comma-separated)"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="location"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Location
-                    </label>
-                    <input
-                      type="text"
-                      name="location"
-                      id="location"
-                      value={formData.location}
-                      onChange={handleChange}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                      placeholder="Enter location"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="pricePerHour"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
-                      Price Per Hour
-                    </label>
-                    <input
-                      type="number"
-                      name="pricePerHour"
-                      id="pricePerHour"
-                      value={formData.pricePerHour}
-                      onChange={handleChange}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                      placeholder="Enter price per hour"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="photos"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >
+                    <label htmlFor="photos" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                       Upload Photos
                     </label>
                     <input
@@ -245,13 +117,13 @@ export function ModalForm({ isOpen, toggleModal }) {
                       id="photos"
                       multiple
                       onChange={handleFileChange}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                     />
                   </div>
                 </div>
                 <button
                   type="submit"
-                  className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 >
                   Add Workspace
                 </button>
@@ -261,5 +133,48 @@ export function ModalForm({ isOpen, toggleModal }) {
         </div>
       )}
     </>
+  );
+}
+
+function InputField({ label, name, value, onChange, type = 'text', required = false, placeholder }) {
+  return (
+    <div>
+      <label htmlFor={name} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        {label}
+      </label>
+      <input
+        type={type}
+        name={name}
+        id={name}
+        value={value}
+        onChange={onChange}
+        required={required}
+        placeholder={placeholder}
+        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+      />
+    </div>
+  );
+}
+
+function SelectField({ label, name, value, onChange, options }) {
+  return (
+    <div>
+      <label htmlFor={name} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        {label}
+      </label>
+      <select
+        name={name}
+        id={name}
+        value={value}
+        onChange={onChange}
+        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+      >
+        {options.map((opt) => (
+          <option key={opt} value={opt}>
+            {opt}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 }
