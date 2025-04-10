@@ -215,32 +215,44 @@ export default function UserSpaces() {
 
   // Check if a workspace is available for the selected time slot
   const isWorkspaceAvailable = (workspace) => {
+    // If no date or time filters are set, consider the workspace available
     if (!dateFilter || !startTimeFilter || !endTimeFilter) {
       return true;
     }
 
+    // Parse requested date and times
     const requestDate = new Date(dateFilter);
     const [startHours, startMinutes] = startTimeFilter.split(":").map(Number);
     const [endHours, endMinutes] = endTimeFilter.split(":").map(Number);
 
+    // Create Date objects for the requested start and end times
     const requestStart = new Date(requestDate);
     requestStart.setHours(startHours, startMinutes, 0, 0);
 
     const requestEnd = new Date(requestDate);
     requestEnd.setHours(endHours, endMinutes, 0, 0);
 
+    // If end time is before or equal to start time, the request is invalid
     if (requestEnd <= requestStart) {
       return false;
     }
 
+    // If workspace has no availability data, consider it available
     if (!workspace.availability || !Array.isArray(workspace.availability) || workspace.availability.length === 0) {
       return true;
     }
 
+    // Check for overlapping bookings
     for (const booking of workspace.availability) {
+      // Skip entries with 'available' status since they don't represent bookings
+      if (booking.status === 'available') {
+        continue;
+      }
+      
       const bookingStart = new Date(booking.startTime);
       const bookingEnd = new Date(booking.endTime);
 
+      // Check if the booking date matches the requested date
       const isSameDate =
         requestDate.getFullYear() === bookingStart.getFullYear() &&
         requestDate.getMonth() === bookingStart.getMonth() &&
@@ -250,13 +262,15 @@ export default function UserSpaces() {
         continue;
       }
 
+      // Check for time overlap
       const hasOverlap = requestStart < bookingEnd && requestEnd > bookingStart;
+      
       if (hasOverlap) {
-        return false;
+        return false; // Workspace is not available due to overlapping booking
       }
     }
 
-    return true;
+    return true; // Workspace is available for the requested time
   };
 
   // Filter workspaces based on price, capacity, and availability
@@ -344,6 +358,7 @@ export default function UserSpaces() {
               setDateFilter("");
               setStartTimeFilter("");
               setEndTimeFilter("");
+              setFilteredWorkspaces(workspaces); // Reset to all workspaces when clearing filters
             }}
             className="px-2 py-1 text-xs text-red-600 bg-red-100 rounded-full hover:bg-red-200 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800"
           >
@@ -365,6 +380,7 @@ export default function UserSpaces() {
               setDateFilter("");
               setStartTimeFilter("");
               setEndTimeFilter("");
+              setFilteredWorkspaces(workspaces); // Reset to all workspaces when clearing filters
             }}
             className="mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded hover:bg-blue-800"
           >
