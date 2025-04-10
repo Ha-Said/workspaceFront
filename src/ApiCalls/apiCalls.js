@@ -41,13 +41,19 @@ export const createWorkspace = async (workspaceData) => {
   try {
     const response = await axios.post(`${API_URL}/space/createWorkspace`, workspaceData);
     return response.data; 
-  } catch (error) {
+  } catch (error) { 
     console.log(error); 
     throw error.response?.data || 'Workspace creation failed'; 
 
   }
 };
-
+export const markMultipleAsRead = async (notificationIds) => {
+  try {
+    const response = await axios.put(`${API_URL}/notification/markallseen`, notificationIds);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error.response?.data || 'Marking notifications as read failed';}}
 export const getAllBookings = async () => {
   try {
     const response = await axios.get(`${API_URL}/booking/getAllBookings`);

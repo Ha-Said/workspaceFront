@@ -5,6 +5,8 @@ import './Loader.css';
 import Loading from './components/loading';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
+
+import  CreateWorkspaceForm from './utils/test'; // This is the form for creating a new workspace. It should be in a separate file.
 //Templates 
 
 import { Dashboard } from './templates/Dashboard';
@@ -73,6 +75,7 @@ function Routing() {
             <Route path="/user/settings" element={<Settings />} />
             <Route path="/user/profile" element={<Profile />} />
             <Route path="/user/announcements" element={<Announcements />} />
+            <Route path="/test" element={<CreateWorkspaceForm />} />
           </Route>
           <Route path="*" element={<Error/>} />
 

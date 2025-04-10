@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { createWorkspace } from '../../ApiCalls/apiCalls';
-import axios from 'axios';
 
 export function ModalForm({ isOpen, toggleModal }) {
   const [user, setUser] = useState(null);
@@ -11,7 +10,7 @@ export function ModalForm({ isOpen, toggleModal }) {
     amenities: '',
     location: '',
     pricePerHour: '',
-    photos: [],
+    photo: null,
   });
 
   useEffect(() => {
@@ -32,7 +31,7 @@ export function ModalForm({ isOpen, toggleModal }) {
   const handleFileChange = (e) => {
     setFormData((prev) => ({
       ...prev,
-      photos: Array.from(e.target.files),
+      photo: e.target.files[0],
     }));
   };
 
@@ -40,24 +39,19 @@ export function ModalForm({ isOpen, toggleModal }) {
     e.preventDefault();
 
     try {
-      // Create a FormData object to send text fields and files together.
       const formDataToSend = new FormData();
       formDataToSend.append('name', formData.name);
       formDataToSend.append('type', formData.type);
       formDataToSend.append('capacity', formData.capacity);
-      // Sending amenities as comma-separated string or you can send JSON if backend supports it.
       formDataToSend.append('amenities', formData.amenities);
       formDataToSend.append('location', formData.location);
       formDataToSend.append('pricePerHour', formData.pricePerHour);
       formDataToSend.append('userId', user?.id);
 
-      // Append each photo with the same key "photos"
-      formData.photos.forEach((photo) => {
-        formDataToSend.append('photos', photo);
-      });
+      if (formData.photo) {
+        formDataToSend.append('image', formData.photo);
+      }
 
-      // Call the createWorkspace method passing the FormData.
-      // Ensure that your createWorkspace method in apiCalls is updated to send a multipart/form-data request.
       const { data: createdWorkspace } = await createWorkspace(formDataToSend);
       console.log('Workspace created successfully', createdWorkspace);
       toggleModal();
@@ -107,17 +101,18 @@ export function ModalForm({ isOpen, toggleModal }) {
                   />
                   <InputField label="Location" name="location" value={formData.location} onChange={handleChange} required />
                   <InputField label="Price Per Hour" name="pricePerHour" type="number" value={formData.pricePerHour} onChange={handleChange} required />
+
                   <div>
-                    <label htmlFor="photos" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                      Upload Photos
+                    <label htmlFor="photo" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                      Upload Photo
                     </label>
                     <input
                       type="file"
-                      name="photos"
-                      id="photos"
-                      multiple
+                      name="photo"
+                      id="photo"
+                      accept="image/*"
                       onChange={handleFileChange}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
                     />
                   </div>
                 </div>

@@ -4,7 +4,7 @@ import calendar from '../../assets/calendar.svg';
 import community from '../../assets/community.svg';
 import rooms from '../../assets/room.svg';
 import {logoutUser} from '../../ApiCalls/apiCalls';
-import NotificationComponent from './notification'
+
 export function UserNavbar() {
   const location = useLocation();
   const currentPath = location.pathname;
@@ -74,9 +74,7 @@ export function UserNavbar() {
               <h1 className="text-lg font-semibold text-gray-900 dark:text-white">{activePageTitle}</h1>
             </div>
             <div className="flex items-center">
-         &&&
               <div className="flex items-center ml-3">
-                
                 <div>
                   <button
                     type="button"

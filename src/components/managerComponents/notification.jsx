@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { markNotificationSeen, getNotifications } from "../../ApiCalls/apiCalls"; 
+import { markNotificationSeen, getNotifications, markMultipleAsRead } from "../../ApiCalls/apiCalls"; 
 
 const NotificationComponent = ({ userId }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,21 +38,24 @@ const NotificationComponent = ({ userId }) => {
   // Function to mark notifications as seen
   const handleMarkAsSeen = async () => {
     try {
-      // Mark all notifications as seen when dropdown is opened
-      await Promise.all(
-        notifications.map((notification) => {
-          if (!notification.seen) {
-            return markNotificationSeen(notification.id); // Mark notification as seen
-          }
-        })
-      );
+      // Filter only unread notifications
+      const unreadNotifications = notifications.filter(notification => !notification.isRead);
+      
+      // Collect IDs of unread notifications - using _id which is the MongoDB ID field
+      const unreadNotificationIds = unreadNotifications.map((notification) => notification._id);
 
-      // Update the notifications UI after marking as seen
-      const updatedNotifications = notifications.map((notification) => ({
-        ...notification,
-        seen: true, // Set the seen status to true
-      }));
-      setNotifications(updatedNotifications);
+      if (unreadNotificationIds.length > 0) {
+        console.log("Sending unread notification IDs:", unreadNotificationIds);
+        // Send the array of IDs to markMultipleAsRead API
+        await markMultipleAsRead({ ids: unreadNotificationIds });
+        
+        // Update the notifications UI after marking as seen
+        const updatedNotifications = notifications.map((notification) => ({
+          ...notification,
+          isRead: true // Update isRead property to match the schema
+        }));
+        setNotifications(updatedNotifications);
+      }
     } catch (error) {
       console.error("Error marking notifications as seen", error);
     }
@@ -82,17 +85,24 @@ const NotificationComponent = ({ userId }) => {
         </svg>
         <span className="sr-only">Notifications</span>
         <div className="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1.5 -end-1.5 dark:border-gray-900">
-          {notifications.filter((notification) => !notification.seen).length} {/* Show unread notifications count */}
+          {notifications.filter((notification) => !notification.isRead).length} {/* Show unread notifications count */}
         </div>
       </button>
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg p-2">
-          {notifications.map((notification) => (
-            <div key={notification.id} className="p-2 border-b last:border-none">
-              <h4 className="text-sm font-bold">{notification.title}</h4>
-              <p className="text-xs text-gray-600">{notification.message}</p>
-            </div>
-          ))}
+        <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-50 max-h-80 overflow-y-auto">
+          {notifications.length > 0 ? (
+            notifications.map((notification) => (
+              <div 
+                key={notification._id} 
+                className={`p-2 border-b last:border-none ${notification.isRead ? 'bg-gray-50' : 'bg-white'}`}
+              >
+                <h4 className="text-sm font-bold">{notification.title}</h4>
+                <p className="text-xs text-gray-600">{notification.message}</p>
+              </div>
+            ))
+          ) : (
+            <div className="p-2 text-center text-gray-500">No notifications</div>
+          )}
         </div>
       )}
     </div>

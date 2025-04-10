@@ -78,7 +78,7 @@ export function Navbar() {
                 {/* Notification Button */}
                 <div className="z-50">
                   {/* Only render the NotificationComponent if user is available */}
-                  {user && <NotificationComponent userId={user.id} />}
+                  {user && <NotificationComponent userId={"111111111111111111111111"} />}
                 </div>
 
                 {/* Profile Menu */}
