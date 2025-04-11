@@ -47,6 +47,14 @@ export const createWorkspace = async (workspaceData) => {
 
   }
 };
+export const updateWorkspace = async (workspaceId, workspaceData) => {
+  try {
+    const response = await axios.put(`${API_URL}/space/updateWorkspace/${workspaceId}`, workspaceData);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error.response?.data || 'Workspace update failed';
+  }};
 export const markMultipleAsRead = async (notificationIds) => {
   try {
     const response = await axios.put(`${API_URL}/notification/markallseen`, notificationIds);
