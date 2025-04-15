@@ -8,7 +8,7 @@ export default function Announcements() {
     useEffect(() => {
         async function fetchAnnouncements() {
             const response = await getAllAnnouncements();
-            const sortedAnnouncements = response.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const sortedAnnouncements = response.sort((a, b) => new Date(a.date) - new Date(b.date));
             setAnnouncements(sortedAnnouncements);
         }
         fetchAnnouncements();

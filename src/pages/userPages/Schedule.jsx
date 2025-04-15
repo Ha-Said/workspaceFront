@@ -26,8 +26,8 @@ export default function UserCalendar() {
       try {
         const token = localStorage.getItem("token");
         const user = JSON.parse(localStorage.getItem("user"));
-        if (token && user) {
-          const userId = user.id; // Correctly set userId from localStorage
+        if (token && user && user.id) { // Added null check for user and user.id
+          const userId = user.id; 
           const data = await getAllBookings();
           console.log(data);
           const formattedBookings = data.map((booking) => ({
@@ -35,7 +35,7 @@ export default function UserCalendar() {
             title: `${booking.workspace.name} (${booking.status})`,
             start: booking.startTime.replace('T', ' ').slice(0, 16),
             end: booking.endTime.replace('T', ' ').slice(0, 16),
-            calendarId: booking.user._id === userId ? 'user' : 'other',
+            calendarId: booking.user && booking.user._id === userId ? 'user' : 'other', // Added null check for booking.user
           }));
           setBookings(formattedBookings); 
           console.log(formattedBookings);
@@ -116,7 +116,6 @@ export default function UserCalendar() {
   return (
     <div className="flex flex-col ">
       <div className="w-full h-2/3 relative">
-        {/* Badges for booking categories */}
         <div className="absolute top-4 right-4 flex space-x-2">
           <span className="bg-[#0e7a5a] text-white text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-[#0b5a42] dark:text-white">
             Your Bookings

@@ -400,26 +400,12 @@ export default function UserSpaces() {
               {/* Image carousel */}
               <div className="relative">
                 {workspace.photo && workspace.photo.length > 0 ? (
-                  <>
-                    <img
-                      className="rounded-t-lg object-cover"
-                      src={workspace.photo[currentImageIndex[workspace._id]]}
-                      alt={workspace.name}
-                      style={{ width: "100%", height: "20em", maxWidth: "30em" }}
-                    />
-                    <span
-                      onClick={() => handlePrevImage(workspace._id)}
-                      className="absolute top-1/2 left-2 transform -translate-y-1/2 text-white bg-black bg-opacity-50 p-2 rounded-full cursor-pointer hover:bg-opacity-75"
-                    >
-                      &lt;
-                    </span>
-                    <span
-                      onClick={() => handleNextImage(workspace._id)}
-                      className="absolute top-1/2 right-2 transform -translate-y-1/2 text-white bg-black bg-opacity-50 p-2 rounded-full cursor-pointer hover:bg-opacity-75"
-                    >
-                      &gt;
-                    </span>
-                  </>
+                  <img
+                    className="rounded-t-lg object-cover"
+                    src={`http://localhost:5000/${workspace.photo[currentImageIndex[workspace._id]]}`}
+                    alt={workspace.name}
+                    style={{ width: "100%", height: "20em", maxWidth: "30em" }}
+                  />
                 ) : (
                   <div className="rounded-t-lg bg-gray-200 h-48 flex items-center justify-center">
                     <p className="text-gray-500">No images available</p>

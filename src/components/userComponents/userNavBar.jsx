@@ -4,7 +4,7 @@ import calendar from '../../assets/calendar.svg';
 import community from '../../assets/community.svg';
 import rooms from '../../assets/room.svg';
 import {logoutUser} from '../../ApiCalls/apiCalls';
-
+import NotificationComponent from './notification';
 export function UserNavbar() {
   const location = useLocation();
   const currentPath = location.pathname;
@@ -34,15 +34,15 @@ export function UserNavbar() {
         const storedUser = JSON.parse(localStorage.getItem('user'));
         if (storedUser) {
           setUser(storedUser);
-       
+          console.log('Fetched user:', storedUser); // Log user info here
         }
-        
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     };
 
     fetchUser();
+    
   }, []);
 
   return (
@@ -75,6 +75,9 @@ export function UserNavbar() {
             </div>
             <div className="flex items-center">
               <div className="flex items-center ml-3">
+             <div className='mr-3'>
+              {user && <NotificationComponent userId={user.id} />}
+              </div>
                 <div>
                   <button
                     type="button"
@@ -160,6 +163,7 @@ export function UserNavbar() {
         } bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700`}
         aria-label="Sidebar"
       >
+        
         <div className="h-full flex flex-col px-3 pb-4 overflow-y-auto">
   <ul className="space-y-2 font-medium">
     {navLinks.map((link) => (

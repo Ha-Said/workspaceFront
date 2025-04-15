@@ -35,10 +35,8 @@ const NotificationComponent = ({ userId }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
-  // Function to mark notifications as seen
   const handleMarkAsSeen = async () => {
     try {
-      // Filter only unread notifications
       const unreadNotifications = notifications.filter(notification => !notification.isRead);
       
       // Collect IDs of unread notifications - using _id which is the MongoDB ID field

@@ -33,12 +33,28 @@ import Profile from './pages/userPages/Profile';
 import Announcements from './pages/userPages/announcements';
 function Routing() {
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null); // Added state for user
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
     }, 200); 
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser) {
+          setUser(storedUser);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUser();
   }, []);
 
   if (loading) {
