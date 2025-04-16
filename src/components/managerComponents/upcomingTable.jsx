@@ -5,6 +5,7 @@ import {
   setBookingConfirmed,
   createPaiment,
   addAvailabilityToWorkspace,
+  createActionLog,
 } from "../../ApiCalls/apiCalls";
 import BookingDetails from "./bookingInfoCard";
 
@@ -31,12 +32,18 @@ export default function UpcomingBookingsTable() {
   const [visibleBookings, setVisibleBookings] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBookingId, setSelectedBookingId] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     async function fetchBookings() {
       try {
         const data = await getAllBookings();
         setBookings(data);
+        // Get current user from localStorage
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        if (storedUser) {
+          setCurrentUser(storedUser);
+        }
       } catch (error) {
         console.error("Error fetching bookings:", error);
       }
@@ -47,7 +54,24 @@ export default function UpcomingBookingsTable() {
   // Cancel booking
   const handleCancel = async (id) => {
     try {
+      const bookingToCancel = bookings.find((booking) => booking._id === id);
+      if (!bookingToCancel) throw new Error(`Booking ${id} not found.`);
+
       await setBookingCancelled(id);
+      
+      // Create action log for cancellation
+      if (currentUser) {
+        const actionLogData = {
+          action: 'cancelled booking',
+          userId: currentUser.id,
+          details: `Booking cancelled for workspace: ${bookingToCancel.workspace?.name || 'Unknown'}`,
+          entityId: id,
+          entityType: 'booking'
+        };
+        console.log('Sending cancellation action log data:', actionLogData);
+        await createActionLog(actionLogData);
+      }
+      
       setBookings((prev) => prev.filter((booking) => booking._id !== id));
     } catch (error) {
       console.error("Error cancelling booking:", error);
@@ -59,11 +83,27 @@ export default function UpcomingBookingsTable() {
     try {
       const confirmedBooking = bookings.find((booking) => booking._id === id);
       if (!confirmedBooking) throw new Error(`Booking ${id} not found.`);
+
       await setBookingConfirmed(id);
+      
+      // Create action log for confirmation
+      if (currentUser) {
+        const actionLogData = {
+          action: 'confirming booking',
+          userId: currentUser.id,
+          details: `Booking confirmed for workspace: ${confirmedBooking.workspace?.name || 'Unknown'}`,
+          entityId: id,
+          entityType: 'booking'
+        };
+        console.log('Sending confirmation action log data:', actionLogData);
+        await createActionLog(actionLogData);
+      }
+
       const startTime = new Date(confirmedBooking.startTime);
       const endTime = new Date(confirmedBooking.endTime);
       const hours = Math.abs(endTime - startTime) / 36e5;
       const amount = hours * confirmedBooking.workspace.pricePerHour;
+      
       const paimentData = {
         amount,
         date: new Date(),
@@ -71,11 +111,27 @@ export default function UpcomingBookingsTable() {
         space: confirmedBooking.workspace,
         dueDate: new Date(confirmedBooking.endTime),
       };
+
       await createPaiment(paimentData);
+      
+      // Create action log for payment creation
+      if (currentUser) {
+        const paymentActionLogData = {
+          action: 'created payment',
+          userId: currentUser.id,
+          details: `Payment created for booking: ${amount} for ${hours} hours`,
+          entityId: confirmedBooking._id,
+          entityType: 'payment'
+        };
+        console.log('Sending payment action log data:', paymentActionLogData);
+        await createActionLog(paymentActionLogData);
+      }
+
       await addAvailabilityToWorkspace(confirmedBooking.workspace._id, {
         startTime: confirmedBooking.startTime,
         endTime: confirmedBooking.endTime,
       });
+
       setBookings((prev) => prev.filter((booking) => booking._id !== id));
       alert(`Booking ${id} confirmed successfully.`);
     } catch (error) {
@@ -97,10 +153,12 @@ export default function UpcomingBookingsTable() {
   const filteredBookings = bookings.filter((booking) => {
     const search = searchQuery.toLowerCase();
     return (
-      booking.workspace?.name?.toLowerCase().includes(search) ||
-      booking._id.toLowerCase().includes(search) ||
-      booking.startTime.toLowerCase().includes(search) ||
-      booking.endTime.toLowerCase().includes(search)
+      booking.status === 'pending' && (  // Only show pending bookings
+        booking.workspace?.name?.toLowerCase().includes(search) ||
+        booking._id.toLowerCase().includes(search) ||
+        booking.startTime.toLowerCase().includes(search) ||
+        booking.endTime.toLowerCase().includes(search)
+      )
     );
   });
 

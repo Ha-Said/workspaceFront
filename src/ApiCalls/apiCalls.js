@@ -341,3 +341,19 @@ export const getNotifications= async (userId)=>{
     console.log(error);
   }
 }
+
+export const createActionLog = async (actionLogData) => {
+  try {
+    console.log('Sending action log data to server:', JSON.stringify(actionLogData, null, 2));
+    const response = await axios.post('http://localhost:5000/action-logs', actionLogData);
+    console.log('Action log created successfully:', response.data);
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.status === 400) {
+      console.error('Validation Error:', error.response.data);
+      throw new Error(`Validation Error: ${JSON.stringify(error.response.data)}`);
+    }
+    console.error('Error creating action log:', error);
+    throw error;
+  }
+};
