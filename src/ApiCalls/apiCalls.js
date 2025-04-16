@@ -396,3 +396,12 @@ export const updateMemberBehavior = async (memberId, behaviorData) => {
     throw error.response?.data || 'Behavior update failed';
   }
 };
+
+export const archiveMember = async (memberId) => {
+  try {
+    const response = await axios.put(`${API_URL}/users/archiveMember/${memberId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || 'Member archiving failed';
+  }
+};
