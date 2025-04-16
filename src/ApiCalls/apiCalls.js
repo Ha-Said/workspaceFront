@@ -357,3 +357,33 @@ export const createActionLog = async (actionLogData) => {
     throw error;
   }
 };
+
+export const getUserRankings = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/action-logs/rankings`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user rankings:', error);
+    throw error.response?.data || 'Failed to fetch user rankings';
+  }
+};
+
+export const getUserSpendingRankings = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/paiments/getUserSpendingRankings`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user spending rankings:', error);
+    throw error.response?.data || 'Failed to fetch user spending rankings';
+  }
+};
+
+export const getCurrentMonthPayments = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/paiments/getCurrentMonthPayments`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching current month payments:', error);
+    throw error.response?.data || 'Failed to fetch current month payments';
+  }
+};
