@@ -36,6 +36,7 @@ export default function Billing() {
               payment._id === id ? { ...payment, paimentStatus: 'Paid' } : payment
             )
           );
+          alert('Payment confirmed successfully.');
         } else {
           console.error('Payment confirmation failed:', response.message);
         }
@@ -43,8 +44,8 @@ export default function Billing() {
       .catch((error) => console.error('Error confirming payment:', error));
   };
 
-  const handleDeletePayment = (id) => {
-    cancelPaiment(id)
+  const handleCancelPayment = (id) => {
+    cancelPaiment(id, { isNoShow: false })
       .then((response) => {
         if (response.success) {
           setPaymentLogs((prev) =>
@@ -52,11 +53,29 @@ export default function Billing() {
               payment._id === id ? { ...payment, paimentStatus: 'Cancelled' } : payment
             )
           );
+          alert('Payment cancelled successfully.');
         } else {
           console.error('Payment cancellation failed:', response.message);
         }
       })
       .catch((error) => console.error('Error canceling payment:', error));
+  };
+
+  const handleMarkAsNoShow = (id) => {
+    cancelPaiment(id, { isNoShow: true })
+      .then((response) => {
+        if (response.success) {
+          setPaymentLogs((prev) =>
+            prev.map((payment) =>
+              payment._id === id ? { ...payment, paimentStatus: 'Cancelled' } : payment
+            )
+          );
+          alert('Payment marked as no-show and user behavior score has been updated.');
+        } else {
+          console.error('Payment no-show marking failed:', response.message);
+        }
+      })
+      .catch((error) => console.error('Error marking payment as no-show:', error));
   };
 
   const filteredPayments = paymentLogs.filter(
@@ -114,18 +133,23 @@ export default function Billing() {
               </p>
               
               {payment.paimentStatus === 'Pending' && (
-                <div>
-                <button 
-                  onClick={() => handleConfirmPayment(payment._id)}
-                  className="mr-3 inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                  Confirm Payment
-                </button>
-                <button 
-                  onClick={() => handleDeletePayment(payment._id)}
-                  className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
-                Cancel
-              </button>
-              </div>
+                <div className="flex flex-col space-y-2">
+                  <button 
+                    onClick={() => handleConfirmPayment(payment._id)}
+                    className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                    Confirm Payment
+                  </button>
+                  <button 
+                    onClick={() => handleCancelPayment(payment._id)}
+                    className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                    Cancel Payment
+                  </button>
+                  <button 
+                    onClick={() => handleMarkAsNoShow(payment._id)}
+                    className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-yellow-700 rounded-lg hover:bg-yellow-800 focus:ring-4 focus:outline-none focus:ring-yellow-300 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800">
+                    Mark as No-Show
+                  </button>
+                </div>
               )}
             </div>
           </div>

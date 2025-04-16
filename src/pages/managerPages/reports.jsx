@@ -1,28 +1,33 @@
+import React from 'react';
 import BasicArea from '../../components/managerComponents/chart';
 import PaymentGraph from '../../components/managerComponents/PaymentGraph';
 import ColumnChart from '../../components/managerComponents/columnChart';
 import ManagerRanks from '../../components/managerComponents/managerRanks';
 import ManagerSpendingRanks from '../../components/managerComponents/managerSpendingRanks';
+import WorkspaceUtilization from '../../components/managerComponents/workspaceUtilization';
 
-export default function Reports() {
+const Reports = () => {
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full space-y-4 p-4">
-      <div className="flex flex-row w-full space-x-4">
-        <div className="w-[70%]">
+    <div className="p-6 space-y-6">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Reports</h1>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="h-[400px]">
           <PaymentGraph />
         </div>
-        <div className="w-[30%]">
+        <div className="h-[400px]">
           <ColumnChart />
         </div>
       </div>
-      <div className="flex flex-row w-full space-x-4">
-        <div className="w-1/2">
-          <ManagerRanks />
-        </div>
-        <div className="w-1/2">
-          <ManagerSpendingRanks />
-        </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ManagerRanks />
+        <ManagerSpendingRanks />
       </div>
+
+      <WorkspaceUtilization />
     </div>
   );
-}
+};
+
+export default Reports;

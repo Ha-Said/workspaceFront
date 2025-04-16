@@ -214,9 +214,9 @@ export const deletePaiment = async (paimentId) => {
   }
 };
 
-export const cancelPaiment = async (paimentId) => {
+export const cancelPaiment = async (paimentId, data) => {
   try {
-    const response = await axios.put(`${API_URL}/paiments/cancelPaiment/${paimentId}`);
+    const response = await axios.put(`${API_URL}/paiments/cancelPaiment/${paimentId}`, data);
     return { success: true, data: response.data };
   } catch (error) {
     return { success: false, message: error.response?.data || 'Payment cancellation failed' };
@@ -385,5 +385,14 @@ export const getCurrentMonthPayments = async () => {
   } catch (error) {
     console.error('Error fetching current month payments:', error);
     throw error.response?.data || 'Failed to fetch current month payments';
+  }
+};
+
+export const updateMemberBehavior = async (memberId, behaviorData) => {
+  try {
+    const response = await axios.put(`${API_URL}/members/${memberId}/behavior`, behaviorData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || 'Behavior update failed';
   }
 };
