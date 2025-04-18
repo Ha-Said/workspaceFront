@@ -7,6 +7,8 @@ const WorkspaceUtilization = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [timeRange, setTimeRange] = useState('month'); // month, week, or day
+  const [showAll, setShowAll] = useState(false);
+  const itemsPerPage = 20;
 
   useEffect(() => {
     const fetchUtilizationData = async () => {
@@ -86,6 +88,8 @@ const WorkspaceUtilization = () => {
   if (loading) return <div className="flex justify-center items-center h-64">Loading...</div>;
   if (error) return <div className="text-red-500 text-center">{error}</div>;
 
+  const displayedData = showAll ? utilizationData : utilizationData.slice(0, itemsPerPage);
+
   return (
     <div className="bg-[#1E1E1E] rounded-lg shadow-md p-6">
       <div className="flex justify-between items-center mb-4">
@@ -139,7 +143,7 @@ const WorkspaceUtilization = () => {
             </tr>
           </thead>
           <tbody className="bg-[#1E1E1E] divide-y divide-gray-700">
-            {utilizationData.map((workspace) => (
+            {displayedData.map((workspace) => (
               <tr key={workspace.workspaceId} className={workspace.utilization > 80 ? 'bg-red-900/20' : ''}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-white">{workspace.name}</div>
@@ -187,6 +191,16 @@ const WorkspaceUtilization = () => {
           </tbody>
         </table>
       </div>
+      {utilizationData.length > itemsPerPage && !showAll && (
+        <div className="mt-4 flex justify-center">
+          <button
+            onClick={() => setShowAll(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+          >
+            Show More
+          </button>
+        </div>
+      )}
     </div>
   );
 };

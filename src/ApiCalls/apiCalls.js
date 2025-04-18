@@ -444,3 +444,13 @@ export const getAllActionLogs = async () => {
     throw error.response?.data || 'Failed to fetch action logs';
   }
 };
+
+export const getMemberByID = async (memberId) => {
+  try {
+    const response = await axios.get(`${API_URL}/users/getMemberById/${memberId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching member:', error);
+    throw error.response?.data || 'Failed to fetch member';
+  }
+};

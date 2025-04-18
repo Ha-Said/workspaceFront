@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAllActionLogs } from '../../ApiCalls/apiCalls';
+import { getAllActionLogs, getMemberByID } from '../../ApiCalls/apiCalls';
 import { format } from 'date-fns';
 
 export default function History() {
@@ -11,9 +11,26 @@ export default function History() {
     const fetchActionLogs = async () => {
       try {
         const response = await getAllActionLogs();
-        // Sort logs by date in descending order (newest first)
         const sortedLogs = response.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setActionLogs(sortedLogs);
+        
+        const logsWithUserInfo = await Promise.all(
+          sortedLogs.map(async (log) => {
+            try {
+              const userInfo = await getMemberByID(log.userId);
+              return {
+                ...log,
+                userInfo
+              };
+            } catch (error) {
+              return {
+                ...log,
+                userInfo: null
+              };
+            }
+          })
+        );
+
+        setActionLogs(logsWithUserInfo);
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch action logs');
@@ -42,7 +59,7 @@ export default function History() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Action History</h1>
+      <h1 className="text-2xl text-white font-bold mb-6">Action History</h1>
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -72,8 +89,8 @@ export default function History() {
                     <div className="flex-shrink-0 h-10 w-10">
                       <img
                         className="h-10 w-10 rounded-full"
-                        src={log.userId?.photo ? `http://localhost:5000/${log.userId.photo}` : 'http://localhost:5000/uploads/placeholder.jpg'}
-                        alt={log.userId?.name || 'User'}
+                        src={log.userInfo?.photo ? `http://localhost:5000/${log.userInfo.photo}` : 'http://localhost:5000/uploads/placeholder.jpg'}
+                        alt={log.userInfo?.name || 'User'}
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.src = 'http://localhost:5000/uploads/placeholder.jpg';
@@ -82,10 +99,10 @@ export default function History() {
                     </div>
                     <div className="ml-4">
                       <div className="text-sm font-medium text-gray-900">
-                        {log.userId?.name || 'Unknown User'}
+                        {log.userInfo?.name || 'Unknown User'}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {log.userId?.email || 'No email'}
+                        {log.userInfo?.email || 'No email'}
                       </div>
                     </div>
                   </div>

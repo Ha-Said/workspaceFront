@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getPaiments } from '../../ApiCalls/apiCalls';
 import { FaStar } from 'react-icons/fa';
 
-const ManagerSpendingRanks = () => {
+const SpendingRanks = () => {
   const [rankings, setRankings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -96,7 +96,7 @@ const ManagerSpendingRanks = () => {
                   <div className="flex items-center">
                     <img
                       className="w-10 h-10 rounded-full"
-                      src={user?.photo ? `http://localhost:5000/${user.photo}` : 'http://localhost:5000/uploads/placeholder.jpg'}
+                      src={user?.photo ? `http://localhost:5000/${user?.photo}` : 'http://localhost:5000/uploads/placeholder.jpg'}
                       alt={user.name}
                     />
                     <div className="ml-3">
@@ -132,4 +132,4 @@ const ManagerSpendingRanks = () => {
   );
 };
 
-export default ManagerSpendingRanks; 
+export default SpendingRanks; 

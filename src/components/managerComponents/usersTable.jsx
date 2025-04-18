@@ -198,7 +198,7 @@ export function TableCard() {
   );
 
   return (
-    <div>
+    <div className="text-white">
       {renderTable(activeMembers, visibleActiveUsers, handleShowMoreActive, "Active Members")}
       {renderTable(archivedMembers, visibleArchivedUsers, handleShowMoreArchived, "Archived Members")}
     </div>
