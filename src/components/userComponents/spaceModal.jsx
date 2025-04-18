@@ -1,165 +1,227 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { createBooking } from '../../ApiCalls/apiCalls';
 
 export function SpaceModal({ isOpen, toggleModal, space }) {
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [bookingData, setBookingData] = useState({
+    date: '',
+    startTime: '',
+    endTime: '',
+    status: 'pending'
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
   if (!isOpen || !space) return null;
 
-  // Handle multiple photos or default to the first one
-  const displayPhoto = space.photo && Array.isArray(space.photo) ? space.photo[0] : space.photo;
-  
+  const handleImageClick = (index) => {
+    setSelectedImage(index);
+  };
+
+  const handleBookingChange = (e) => {
+    const { name, value } = e.target;
+    setBookingData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleBookingSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      const booking = {
+        ...bookingData,
+        space: space._id,
+        startTime: new Date(`${bookingData.date}T${bookingData.startTime}`),
+        endTime: new Date(`${bookingData.date}T${bookingData.endTime}`),
+        status: 'pending'
+      };
+
+      await createBooking(booking);
+      toggleModal();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to create booking');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black bg-opacity-50">
       <div className="relative w-full max-w-4xl p-4 mx-auto my-8">
-        <div className="relative bg-white rounded-lg shadow-xl dark:bg-gray-800">
-          {/* Header with close button */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Workspace Details
+        <div className="relative bg-white rounded-2xl shadow-xl dark:bg-gray-800">
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {space.name}
             </h3>
             <button
               type="button"
-              className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-2 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+              className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors"
               onClick={toggleModal}
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path>
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <span className="sr-only">Close modal</span>
             </button>
           </div>
 
           {/* Content */}
           <div className="p-6">
-            <div className="flex flex-col md:flex-row">
-              {/* Left column - Photo gallery */}
-              <div className="w-full md:w-1/2 mb-6 md:mb-0 md:pr-4">
-                <div className="relative w-full h-64 overflow-hidden rounded-lg shadow-md mb-4">
-                  {displayPhoto ? (
-                    <img
-                      src={displayPhoto}
-                      alt={space.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-700">
-                      <span className="text-gray-500 dark:text-gray-400">No image available</span>
-                    </div>
-                  )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Image Gallery */}
+              <div className="space-y-4">
+                <div className="relative h-64 rounded-xl overflow-hidden">
+                  <img
+                    src={space.photo && space.photo.length > 0 ? `http://localhost:5000/${space.photo[selectedImage]}` : '/uploads/placeholder.jpg'}
+                    alt={space.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                
-                {/* Thumbnail gallery for multiple photos */}
-                {space.photo && Array.isArray(space.photo) && space.photo.length > 1 && (
-                  <div className="flex overflow-x-auto space-x-2 pb-2">
+                {space.photo && space.photo.length > 1 && (
+                  <div className="grid grid-cols-4 gap-2">
                     {space.photo.map((photo, index) => (
-                      <div key={index} className="flex-shrink-0 w-20 h-20">
+                      <button
+                        key={index}
+                        onClick={() => handleImageClick(index)}
+                        className={`relative h-20 rounded-lg overflow-hidden transition-all ${
+                          selectedImage === index ? 'ring-2 ring-blue-500' : 'hover:ring-2 hover:ring-gray-300'
+                        }`}
+                      >
                         <img
-                          src={photo}
+                          src={`http://localhost:5000/${photo}`}
                           alt={`${space.name} - ${index + 1}`}
-                          className="w-full h-full object-cover rounded-md cursor-pointer hover:opacity-90"
+                          className="w-full h-full object-cover"
                         />
-                      </div>
+                      </button>
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* Right column - Workspace details */}
-              <div className="w-full md:w-1/2">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{space.name}</h2>
-                
-                <div className="flex items-center text-gray-600 dark:text-gray-300 mb-4">
-                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"></path>
-                  </svg>
-                  <span>{space.location}</span>
-                </div>
-                
-                <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-4">
+              {/* Space Details and Booking Form */}
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-300">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span>{space.location}</span>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
+                    <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-xl">
                       <p className="text-sm text-gray-500 dark:text-gray-400">Type</p>
                       <p className="font-semibold text-gray-900 dark:text-white capitalize">{space.type}</p>
                     </div>
-                    <div>
+                    <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-xl">
                       <p className="text-sm text-gray-500 dark:text-gray-400">Capacity</p>
-                      <p className="font-semibold text-gray-900 dark:text-white">{space.capacity} {space.capacity === 1 ? 'person' : 'people'}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">{space.capacity} people</p>
+                    </div>
+                    <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-xl">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Price</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">{space.pricePerHour} DT/hour</p>
+                    </div>
+                    <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-xl">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Status</p>
+                      <p className="font-semibold text-gray-900 dark:text-white capitalize">{space.status}</p>
+                    </div>
+                  </div>
+
+                  {space.amenities && space.amenities.length > 0 && (
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Amenities</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {space.amenities.map((amenity, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full dark:bg-blue-900 dark:text-blue-200"
+                          >
+                            {amenity}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Booking Form */}
+                <form onSubmit={handleBookingSubmit} className="space-y-4">
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Book This Space</h4>
+                  
+                  {error && (
+                    <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm">
+                      {error}
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Date
+                      </label>
+                      <input
+                        type="date"
+                        name="date"
+                        value={bookingData.date}
+                        onChange={handleBookingChange}
+                        className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        required
+                        min={new Date().toISOString().split('T')[0]}
+                      />
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Price</p>
-                      <p className="font-semibold text-gray-900 dark:text-white">{space.pricePerHour} DT per hour</p>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Start Time
+                      </label>
+                      <input
+                        type="time"
+                        name="startTime"
+                        value={bookingData.startTime}
+                        onChange={handleBookingChange}
+                        className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        End Time
+                      </label>
+                      <input
+                        type="time"
+                        name="endTime"
+                        value={bookingData.endTime}
+                        onChange={handleBookingChange}
+                        className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        required
+                      />
                     </div>
                   </div>
-                </div>
-                
-                {/* Amenities */}
-                {space.amenities && space.amenities.length > 0 && (
-                  <div className="mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Amenities</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {space.amenities.map((amenity, index) => (
-                        <span 
-                          key={index} 
-                          className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full dark:bg-blue-900 dark:text-blue-200"
-                        >
-                          {amenity}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {/* Description if available */}
-                {space.description && (
-                  <div className="mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Description</h3>
-                    <p className="text-gray-700 dark:text-gray-300">{space.description}</p>
-                  </div>
-                )}
-                
-                {/* Availability section */}
-                {space.availability && space.availability.length > 0 && (
-                  <div className="mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Upcoming Bookings</h3>
-                    <div className="max-h-40 overflow-y-auto">
-                      {space.availability.map((booking, index) => {
-                        // Skip available slots
-                        if (booking.status === 'available') return null;
-                        
-                        const startTime = new Date(booking.startTime);
-                        const endTime = new Date(booking.endTime);
-                        
-                        return (
-                          <div key={index} className="mb-2 p-2 bg-gray-50 dark:bg-gray-700 rounded-md text-sm">
-                            <div className="font-medium">
-                              {startTime.toLocaleDateString()} 
-                            </div>
-                            <div>
-                              {startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
-                              {endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </div>
-                          </div>
-                        );
-                      }).filter(Boolean)}
-                      
-                      {space.availability.filter(booking => booking.status !== 'available').length === 0 && (
-                        <p className="text-gray-500 dark:text-gray-400">No upcoming bookings</p>
-                      )}
-                    </div>
-                  </div>
-                )}
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <span className="flex items-center justify-center">
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Booking...
+                      </span>
+                    ) : (
+                      'Book Now'
+                    )}
+                  </button>
+                </form>
               </div>
             </div>
-          </div>
-
-          {/* Footer with actions */}
-          <div className="flex items-center justify-end p-4 border-t border-gray-200 dark:border-gray-700">
-            <button
-              type="button"
-              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 mr-2"
-              onClick={toggleModal}
-            >
-              Close
-            </button>
-            
           </div>
         </div>
       </div>

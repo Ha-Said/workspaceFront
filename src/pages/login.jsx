@@ -6,17 +6,19 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (event) => {
     event.preventDefault();
     setError("");
+    setIsLoading(true);
 
     try {
       const response = await axios.post(
         "http://localhost:5000/auth/login",
         { email, password },
-        { withCredentials: true } 
+        { withCredentials: true }
       );
 
       localStorage.setItem("token", response.data.token);
@@ -30,89 +32,84 @@ export default function LoginPage() {
         setError("Invalid user role.");
       }
     } catch (error) {
-      setError(
-        error.response?.data?.message || "Login failed. Please try again."
-      );
+      setError(error.response?.data?.message || "Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="text-white flex min-h-screen flex-col items-center pt-16 sm:justify-center sm:pt-0">
-      <div className="relative mt-12 w-full max-w-lg sm:mt-10">
-        <div className="relative -mb-px h-px w-full bg-gradient-to-r from-transparent via-sky-300 to-transparent"></div>
-        <div className="mx-5 border dark:border-b-white/50 dark:border-t-white/50 border-b-white/20 shadow-lg rounded-lg p-6">
-          <h3 className="text-xl font-semibold leading-6 tracking-tighter">
-            Login
-          </h3>
-          <p className="mt-1.5 text-sm font-medium text-white/50">
-            Welcome back, enter your credentials to continue.
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden">
+          <div className="p-8">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-white">Welcome Back</h2>
+              <p className="text-gray-400 mt-2">Sign in to your account</p>
+            </div>
 
-          <form onSubmit={handleLogin} className="mt-4">
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                  <div className="relative">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full px-4 py-2 bg-white/5 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                      placeholder="Enter your email"
+                      required
+                    />
+                  </div>
+                </div>
 
-            {/* Email Input */}
-            <div className="mt-3">
-              <div className="group relative rounded-lg border px-3 pb-1.5 pt-2.5 duration-200 focus-within:ring focus-within:ring-sky-300/30">
-                <label className="text-xs font-medium text-gray-400">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email"
-                  autoComplete="off"
-                  className="block w-full bg-transparent p-0 text-sm placeholder-gray-500 focus:outline-none focus:ring-0 text-white"
-                  required
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Password</label>
+                  <div className="relative">
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full px-4 py-2 bg-white/5 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                      placeholder="Enter your password"
+                      required
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
 
-            {/* Password Input */}
-            <div className="mt-4">
-              <div className="group relative rounded-lg border px-3 pb-1.5 pt-2.5 duration-200 focus-within:ring focus-within:ring-sky-300/30">
-                <label className="text-xs font-medium text-gray-400">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  className="block w-full bg-transparent p-0 text-sm placeholder-gray-500 focus:outline-none focus:ring-0 text-white"
-                  required
-                />
+              {error && (
+                <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+
+              <div className="flex items-center justify-between">
+                <a href="/register" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+                  Don't have an account? Register
+                </a>
               </div>
-            </div>
 
-            <div className="mt-4 flex items-center justify-between">
-              <a
-                className="text-sm font-medium text-foreground underline"
-                href="/forgot-password"
-              >
-                Forgot password?
-              </a>
-            </div>
-
-            {/* Buttons */}
-            <div className="mt-4 flex items-center justify-end gap-x-2">
-              <a
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium hover:bg-gray-700 transition-all px-4 py-2"
-                href="/register"
-              >
-                Register
-              </a>
               <button
-                className="font-semibold bg-white text-black rounded-md px-4 py-2 hover:bg-black hover:text-white transition-all"
                 type="submit"
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 px-4 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Log in
+                {isLoading ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Signing in...
+                  </span>
+                ) : (
+                  "Sign In"
+                )}
               </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </div>
