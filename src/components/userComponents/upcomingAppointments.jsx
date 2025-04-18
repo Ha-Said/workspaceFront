@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getBookingByMemberId } from "../../ApiCalls/apiCalls";
-import { UpdateBookingModal } from './updateBookingModal'; // Import UpdateBookingModal
+import { UpdateBookingModal } from './updateBookingModal';
 import { EmailForm } from './EmailInviteModal';
 
 export function UpcomingAppointments() {
@@ -9,7 +9,7 @@ export function UpcomingAppointments() {
   const [error, setError] = useState("");
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false); // State for invite modal
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -17,8 +17,7 @@ export function UpcomingAppointments() {
         const token = localStorage.getItem("token");
         const user = JSON.parse(localStorage.getItem("user"));
         if (token && user) {
-          const memberId = user.id; 
-
+          const memberId = user.id;
           const data = await getBookingByMemberId(memberId);
           const upcomingBookings = data.filter(booking => new Date(booking.date) >= new Date());
           setBookings(upcomingBookings);
@@ -27,9 +26,7 @@ export function UpcomingAppointments() {
           }
         }
       } catch (error) {
-        setError(
-          error.response?.data?.message || "Login failed. Please try again."
-        );
+        setError(error.response?.data?.message || "Login failed. Please try again.");
         console.error("Error fetching bookings:", error);
       }
     };
@@ -58,82 +55,111 @@ export function UpcomingAppointments() {
     setIsInviteModalOpen(true);
   };
 
+  const getStatusBadgeClass = (status) => {
+    switch (status.toLowerCase()) {
+      case 'confirmed':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100';
+    }
+  };
+
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-      <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-          <tr>
-            <th scope="col" className="px-6 py-3">
-              Date
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Start Time
-            </th>
-            <th scope="col" className="px-6 py-3">
-              End Time
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Status
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Action
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {bookings.slice(0, visibleBookings).map((booking, index) => (
-            <tr
-              key={booking.id || index} 
-              className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200"
-            >
-              <td className="px-6 py-4">{new Date(booking.date).toISOString().split('T')[0]}</td>
-              <td className="px-6 py-4">{formatTime(booking.startTime)}</td>
-              <td className="px-6 py-4">{formatTime(booking.endTime)}</td>
-              <td className="px-6 py-4">{booking.status}</td>
-              <td className="px-6 py-4 ">
-                <button
-                  onClick={() => handleEditBooking(booking)}
-                  className={`px-4 py-2 text-white rounded mr-4 ${
-                    booking.status === "confirmed" || booking.status === "cancelled" ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-                  }`}
-                  disabled={booking.status === "confirmed" || booking.status === "cancelled"}
-                  title={
-                    booking.status === "confirmed"
-                      ? "Your booking is confirmed. You can no longer update it."
-                      : booking.status === "cancelled"
-                      ? "This booking is cancelled. You cannot edit it."
-                      : ""
-                  }
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+      <div className="p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Upcoming Appointments</h2>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+              <tr>
+                <th scope="col" className="px-6 py-3 font-medium">Date</th>
+                <th scope="col" className="px-6 py-3 font-medium">Start Time</th>
+                <th scope="col" className="px-6 py-3 font-medium">End Time</th>
+                <th scope="col" className="px-6 py-3 font-medium">Status</th>
+                <th scope="col" className="px-6 py-3 font-medium text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              {bookings.slice(0, visibleBookings).map((booking, index) => (
+                <tr
+                  key={booking.id || index}
+                  className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
-                  Edit
-                </button>
-                {booking.status !== "pending" && (
-                  <button
-                    onClick={() => handleInviteBooking(booking)}
-                    className={`px-4 py-2 text-white rounded ${
-                      booking.status === "cancelled" ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-                    }`}
-                    disabled={booking.status === "cancelled"}
-                    title={booking.status === "cancelled" ? "This booking is cancelled. You cannot send an invite." : ""}
-                  >
-                    Invite
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {visibleBookings < bookings.length && (
-        <div className="flex justify-center mt-4">
-          <button
-            onClick={handleShowMore}
-            className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
-          >
-            Show More
-          </button>
+                  <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                    {new Date(booking.date).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                  </td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
+                    {formatTime(booking.startTime)}
+                  </td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
+                    {formatTime(booking.endTime)}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(booking.status)}`}>
+                      {booking.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-right space-x-2">
+                    <button
+                      onClick={() => handleEditBooking(booking)}
+                      disabled={booking.status === "confirmed" || booking.status === "cancelled"}
+                      className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                        booking.status === "confirmed" || booking.status === "cancelled"
+                          ? "bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed"
+                          : "bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+                      }`}
+                      title={
+                        booking.status === "confirmed"
+                          ? "Your booking is confirmed. You can no longer update it."
+                          : booking.status === "cancelled"
+                          ? "This booking is cancelled. You cannot edit it."
+                          : ""
+                      }
+                    >
+                      Edit
+                    </button>
+                    {booking.status !== "pending" && (
+                      <button
+                        onClick={() => handleInviteBooking(booking)}
+                        disabled={booking.status === "cancelled"}
+                        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                          booking.status === "cancelled"
+                            ? "bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed"
+                            : "bg-purple-600 text-white hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600"
+                        }`}
+                        title={booking.status === "cancelled" ? "This booking is cancelled. You cannot send an invite." : ""}
+                      >
+                        Invite
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      )}
+
+        {visibleBookings < bookings.length && (
+          <div className="flex justify-center mt-6">
+            <button
+              onClick={handleShowMore}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors"
+            >
+              Show More
+            </button>
+          </div>
+        )}
+      </div>
+
       <UpdateBookingModal
         isOpen={isModalOpen}
         toggleModal={() => setIsModalOpen(false)}

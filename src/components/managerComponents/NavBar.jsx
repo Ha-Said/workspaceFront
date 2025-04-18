@@ -9,7 +9,7 @@ export function Navbar() {
     { name: 'Schedule', path: '/manager/schedule' },
     { name: 'Community', path: '/manager/community' },
     { name: 'Spaces', path: '/manager/spaces' },
-    { name: 'Billing ', path: '/manager/billing ' },
+    { name: 'Billing', path: '/manager/billing' },
     { name: 'Reports', path: '/manager/reports' },
     { name: 'Announcements', path: '/manager/announcements' },
   ];
@@ -50,27 +50,20 @@ export function Navbar() {
 
   return (
     <div className="min-h-full">
-      <nav className="bg-gray-800 shadow-md">
+      <nav className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center">
-              <div className="shrink-0">
-                <img
-                  className="h-8 w-8"
-                  src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-                  alt="Your Company"
-                />
-              </div>
               <div className="hidden md:block">
-                <div className="ml-10 flex items-baseline space-x-4">
+                <div className="ml-4 flex items-baseline space-x-8">
                   {navLinks.map(link => (
                     <a
                       key={link.name}
                       href={link.path}
-                      className={`rounded-md px-3 py-2 text-sm font-medium ${
+                      className={`text-sm font-medium transition-colors duration-200 ${
                         currentPath === link.path
-                          ? 'bg-indigo-600 text-white'
-                          : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                          ? 'text-blue-600 dark:text-blue-400'
+                          : 'text-gray-500 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
                       }`}
                       aria-current={currentPath === link.path ? 'page' : undefined}
                     >
@@ -81,19 +74,15 @@ export function Navbar() {
               </div>
             </div>
 
-            {/* Profile and Notification Buttons */}
             <div className="hidden md:block">
               <div className="ml-4 flex items-center md:ml-6">
-                {/* Notification Button */}
-                <div className="z-50">
-                  {/* Only render the NotificationComponent if user is available */}
+                <div className="relative">
                   {user && <NotificationComponent userId={"111111111111111111111111"} />}
                 </div>
 
-                {/* History Button */}
                 <button
                   onClick={handleHistoryClick}
-                  className="ml-3 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  className="ml-4 p-1 rounded-full text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
                   title="View History"
                 >
                   <svg
@@ -111,11 +100,10 @@ export function Navbar() {
                   </svg>
                 </button>
 
-                {/* Profile Menu */}
-                <div className="relative ml-3">
+                <div className="relative ml-4">
                   <button
                     type="button"
-                    className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                    className="flex max-w-xs items-center rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
                     id="user-menu-button"
                     aria-expanded={isProfileMenuOpen}
                     aria-haspopup="true"
@@ -135,14 +123,14 @@ export function Navbar() {
 
                   {isProfileMenuOpen && (
                     <div
-                      className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5"
+                      className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black/5 dark:ring-white/5"
                       role="menu"
                       aria-orientation="vertical"
                       aria-labelledby="user-menu-button"
                     >
                       <a
                         href="#"
-                        className="block px-4 py-2 text-sm text-gray-700"
+                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                         role="menuitem"
                         onClick={handleSignOut}
                       >
@@ -154,11 +142,10 @@ export function Navbar() {
               </div>
             </div>
 
-            {/* Mobile menu button */}
             <div className="-mr-2 flex md:hidden">
               <button
                 type="button"
-                className="relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                className="inline-flex items-center justify-center rounded-md p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
                 aria-controls="mobile-menu"
                 aria-expanded={isMobileMenuOpen}
                 onClick={toggleMobileMenu}
@@ -193,7 +180,6 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
         <div className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`} id="mobile-menu">
           <div className="space-y-1 px-2 pt-2 pb-3 sm:px-3">
             {navLinks.map(link => (
@@ -202,8 +188,8 @@ export function Navbar() {
                 href={link.path}
                 className={`block rounded-md px-3 py-2 text-base font-medium ${
                   currentPath === link.path
-                    ? 'bg-indigo-600 text-white'
-                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                    ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
+                    : 'text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400'
                 }`}
                 aria-current={currentPath === link.path ? 'page' : undefined}
               >
@@ -211,7 +197,7 @@ export function Navbar() {
               </a>
             ))}
           </div>
-          <div className="border-t border-gray-700 pt-4 pb-3">
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-4 pb-3">
             <div className="flex items-center px-5">
               <div className="shrink-0">
                 <img
@@ -225,12 +211,12 @@ export function Navbar() {
                 />
               </div>
               <div className="ml-3">
-                <div className="text-base font-medium text-white">{user?.name || 'Guest'}</div>
-                <div className="text-sm font-medium text-gray-400">{user?.email || 'guest@example.com'}</div>
+                <div className="text-base font-medium text-gray-800 dark:text-white">{user?.name || 'Guest'}</div>
+                <div className="text-sm font-medium text-gray-500 dark:text-gray-400">{user?.email || 'guest@example.com'}</div>
               </div>
               <button
                 onClick={handleHistoryClick}
-                className="ml-auto p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                className="ml-auto p-1 rounded-full text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
                 title="View History"
               >
                 <svg
@@ -251,7 +237,7 @@ export function Navbar() {
             <div className="mt-3 space-y-1 px-2">
               <a
                 href="#"
-                className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                className="block rounded-md px-3 py-2 text-base font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400"
                 onClick={handleSignOut}
               >
                 Sign out
