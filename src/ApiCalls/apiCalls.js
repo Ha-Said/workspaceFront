@@ -47,6 +47,15 @@ export const createWorkspace = async (workspaceData) => {
 
   }
 };
+export const gemini = async (text) => {
+  try {
+    const response = await axios.post(`${API_URL}/gemini/generate`, { text });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || 'Gemini generation failed';
+  }
+};
+
 export const updateWorkspace = async (workspaceId, workspaceData) => {
   try {
     const response = await axios.put(`${API_URL}/space/updateWorkspace/${workspaceId}`, workspaceData);

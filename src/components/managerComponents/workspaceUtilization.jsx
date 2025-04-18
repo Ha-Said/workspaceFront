@@ -8,7 +8,7 @@ const WorkspaceUtilization = () => {
   const [error, setError] = useState(null);
   const [timeRange, setTimeRange] = useState('month'); // month, week, or day
   const [showAll, setShowAll] = useState(false);
-  const itemsPerPage = 20;
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchUtilizationData = async () => {
