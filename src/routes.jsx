@@ -24,6 +24,7 @@ import Reports from'./pages/managerPages/reports';
 import AccountForm from './components/managerComponents/editProfile';
 import Billing from './pages/managerPages/billing';
 import ManagerAnnouncements from './pages/managerPages/announcements';
+import History from './pages/managerPages/history';
 
  //USER IMPORTS
 import  UserCalendar  from './pages/userPages/Schedule';
@@ -81,6 +82,7 @@ function Routing() {
             <Route path="/editProfile/:email" element={<AccountForm />} />
             <Route path='/manager/billing' element={<Billing/>}/>
             <Route path='/manager/announcements' element={<ManagerAnnouncements/>}/>
+            <Route path='/manager/history' element={<History/>}/>
           </Route>
           <Route element={<UserDashboard/>}>
           

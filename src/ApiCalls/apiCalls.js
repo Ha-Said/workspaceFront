@@ -134,7 +134,10 @@ export const deleteBooking = async (bookingId) => {
 export const updateMember = async (memberId, memberData) => {
   try {
     const response = await axios.put(`${API_URL}/users/updateMember/${memberId}`, memberData);
-    return response.data;
+    return {
+      data: response.data,
+      message: "Member updated successfully"
+    };
   } catch (error) {
     throw error.response?.data || 'Member update failed';
   }
@@ -167,21 +170,25 @@ export const createAnnouncement = async (announcementData) => {
   }
 };
 
-export const deleteMember = async(memberId) => {
+export const deleteMember = async (memberId) => {
   try {
     const response = await axios.delete(`${API_URL}/users/deleteMember/${memberId}`);
-    return response.data;
+    return {
+      data: response.data,
+      message: "Member deleted successfully"
+    };
   } catch (error) {
     throw error.response?.data || 'Member deletion failed';
   }
 };
 
 export const setMemberToManagerRole = async (memberId) => {
-  
-  console.log(memberId);
   try {
     const response = await axios.put(`${API_URL}/users/setMemberToManagerRole/${memberId}`);
-    return response.data;
+    return {
+      data: response.data,
+      message: "Manager role assigned successfully"
+    };
   } catch (error) {
     throw error.response?.data || 'Assigning manager role failed';
   }
@@ -190,25 +197,34 @@ export const setMemberToManagerRole = async (memberId) => {
 export const createPaiment = async (paimentData) => {
   try {
     const response = await axios.post(`${API_URL}/paiments/createPaimentLog`, paimentData);
-    return response.data;
-  }catch(error){
-    console.log(error);
-    throw error.response?.data ||'creating log failed'
-  }};
+    return {
+      data: response.data,
+      message: "Payment created successfully"
+    };
+  } catch (error) {
+    throw error.response?.data || 'Payment creation failed';
+  }
+};
 
 export const confirmPaiment = async (paimentId) => {
   try {
     const response = await axios.put(`${API_URL}/paiments/confirmPaiment/${paimentId}`);
-    return { success: true, data: response.data };
+    return {
+      data: response.data,
+      message: "Payment confirmed successfully"
+    };
   } catch (error) {
-    return { success: false, message: error.response?.data || 'Payment confirmation failed' };
+    throw error.response?.data || 'Payment confirmation failed';
   }
 };
 
 export const deletePaiment = async (paimentId) => {
   try {
     const response = await axios.delete(`${API_URL}/paiments/deletePaiment/${paimentId}`);
-    return response.data;
+    return {
+      data: response.data,
+      message: "Payment deleted successfully"
+    };
   } catch (error) {
     throw error.response?.data || 'Payment deletion failed';
   }
@@ -217,9 +233,12 @@ export const deletePaiment = async (paimentId) => {
 export const cancelPaiment = async (paimentId, data) => {
   try {
     const response = await axios.put(`${API_URL}/paiments/cancelPaiment/${paimentId}`, data);
-    return { success: true, data: response.data };
+    return {
+      data: response.data,
+      message: "Payment cancelled successfully"
+    };
   } catch (error) {
-    return { success: false, message: error.response?.data || 'Payment cancellation failed' };
+    throw error.response?.data || 'Payment cancellation failed';
   }
 };
 
@@ -290,31 +309,39 @@ export const getWorkspaceById = async (workspaceId) => {
   }
 };
 
-export const setBookingCancelled = async (bookingId) => {
-  try {
-    const response = await axios.put(`${API_URL}/booking/setBookingCancelled/${bookingId}`);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || 'Booking cancellation failed';
-  }
-};
-
 export const setBookingConfirmed = async (bookingId) => {
   try {
     const response = await axios.put(`${API_URL}/booking/setBookingConfirmed/${bookingId}`);
-    alert(`Booking with ID ${bookingId} has been successfully confirmed.`);
-    return response.data;
+    return {
+      data: response.data,
+      message: "Booking confirmed successfully"
+    };
   } catch (error) {
     throw error.response?.data || 'Booking confirmation failed';
+  }
+};
+
+export const setBookingCancelled = async (bookingId) => {
+  try {
+    const response = await axios.put(`${API_URL}/booking/setBookingCancelled/${bookingId}`);
+    return {
+      data: response.data,
+      message: "Booking cancelled successfully"
+    };
+  } catch (error) {
+    throw error.response?.data || 'Booking cancellation failed';
   }
 };
 
 export const addAvailabilityToWorkspace = async (workspaceId, availabilityData) => {
   try {
     const response = await axios.put(`${API_URL}/space/addAvailability/${workspaceId}`, availabilityData);
-    return response.data;
+    return {
+      data: response.data,
+      message: "Availability added successfully"
+    };
   } catch (error) {
-    throw error.response?.data || 'Adding availability to workspace failed';
+    throw error.response?.data || 'Adding availability failed';
   }
 };
 
@@ -344,17 +371,13 @@ export const getNotifications= async (userId)=>{
 
 export const createActionLog = async (actionLogData) => {
   try {
-    console.log('Sending action log data to server:', JSON.stringify(actionLogData, null, 2));
-    const response = await axios.post('http://localhost:5000/action-logs', actionLogData);
-    console.log('Action log created successfully:', response.data);
-    return response.data;
+    const response = await axios.post(`${API_URL}/action-logs`, actionLogData);
+    return {
+      data: response.data,
+      message: "Action logged successfully"
+    };
   } catch (error) {
-    if (error.response && error.response.status === 400) {
-      console.error('Validation Error:', error.response.data);
-      throw new Error(`Validation Error: ${JSON.stringify(error.response.data)}`);
-    }
-    console.error('Error creating action log:', error);
-    throw error;
+    throw error.response?.data || 'Action logging failed';
   }
 };
 
@@ -391,7 +414,10 @@ export const getCurrentMonthPayments = async () => {
 export const updateMemberBehavior = async (memberId, behaviorData) => {
   try {
     const response = await axios.put(`${API_URL}/members/${memberId}/behavior`, behaviorData);
-    return response.data;
+    return {
+      data: response.data,
+      message: "Member behavior updated successfully"
+    };
   } catch (error) {
     throw error.response?.data || 'Behavior update failed';
   }
@@ -400,8 +426,21 @@ export const updateMemberBehavior = async (memberId, behaviorData) => {
 export const archiveMember = async (memberId) => {
   try {
     const response = await axios.put(`${API_URL}/users/archiveMember/${memberId}`);
-    return response.data;
+    return {
+      data: response.data,
+      message: "Member archived successfully"
+    };
   } catch (error) {
     throw error.response?.data || 'Member archiving failed';
+  }
+};
+
+export const getAllActionLogs = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/action-logs`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching action logs:', error);
+    throw error.response?.data || 'Failed to fetch action logs';
   }
 };

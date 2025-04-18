@@ -1,0 +1,11 @@
+/* Global button styles */
+button {
+  cursor: pointer;
+}
+
+/* Ensure all interactive elements have pointer cursor */
+button:hover,
+a:hover,
+[role="button"]:hover {
+  cursor: pointer;
+} 

@@ -44,6 +44,10 @@ export function Navbar() {
     window.location.href = '/login';
   };
 
+  const handleHistoryClick = () => {
+    window.location.href = '/manager/history';
+  };
+
   return (
     <div className="min-h-full">
       <nav className="bg-gray-800 shadow-md">
@@ -85,6 +89,27 @@ export function Navbar() {
                   {/* Only render the NotificationComponent if user is available */}
                   {user && <NotificationComponent userId={"111111111111111111111111"} />}
                 </div>
+
+                {/* History Button */}
+                <button
+                  onClick={handleHistoryClick}
+                  className="ml-3 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  title="View History"
+                >
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </button>
 
                 {/* Profile Menu */}
                 <div className="relative ml-3">
@@ -203,6 +228,25 @@ export function Navbar() {
                 <div className="text-base font-medium text-white">{user?.name || 'Guest'}</div>
                 <div className="text-sm font-medium text-gray-400">{user?.email || 'guest@example.com'}</div>
               </div>
+              <button
+                onClick={handleHistoryClick}
+                className="ml-auto p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                title="View History"
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </button>
             </div>
             <div className="mt-3 space-y-1 px-2">
               <a

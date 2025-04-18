@@ -8,6 +8,7 @@ import {
   createActionLog,
 } from "../../ApiCalls/apiCalls";
 import BookingDetails from "./bookingInfoCard";
+import { Toast } from "../common/Toast";
 
 // Reusable Modal Component
 function Modal({ children, onClose }) {
@@ -33,33 +34,44 @@ export default function UpcomingBookingsTable() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [toastMessage, setToastMessage] = useState(null);
 
   useEffect(() => {
     async function fetchBookings() {
       try {
         const data = await getAllBookings();
         setBookings(data);
-        // Get current user from localStorage
         const storedUser = JSON.parse(localStorage.getItem("user"));
         if (storedUser) {
           setCurrentUser(storedUser);
         }
       } catch (error) {
         console.error("Error fetching bookings:", error);
+        showToast("Error fetching bookings");
       }
     }
     fetchBookings();
   }, []);
 
+  // Show toast message
+  const showToast = (message) => {
+    setToastMessage(message);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3000);
+  };
+
   // Cancel booking
   const handleCancel = async (id) => {
     try {
       const bookingToCancel = bookings.find((booking) => booking._id === id);
-      if (!bookingToCancel) throw new Error(`Booking ${id} not found.`);
+      if (!bookingToCancel) {
+        showToast("Booking not found");
+        return;
+      }
 
       await setBookingCancelled(id);
       
-      // Create action log for cancellation
       if (currentUser) {
         const actionLogData = {
           action: 'cancelled booking',
@@ -68,13 +80,14 @@ export default function UpcomingBookingsTable() {
           entityId: id,
           entityType: 'booking'
         };
-        console.log('Sending cancellation action log data:', actionLogData);
         await createActionLog(actionLogData);
       }
       
       setBookings((prev) => prev.filter((booking) => booking._id !== id));
+      showToast("Booking cancelled successfully");
     } catch (error) {
       console.error("Error cancelling booking:", error);
+      showToast("Error cancelling booking");
     }
   };
 
@@ -82,11 +95,13 @@ export default function UpcomingBookingsTable() {
   const handleConfirm = async (id) => {
     try {
       const confirmedBooking = bookings.find((booking) => booking._id === id);
-      if (!confirmedBooking) throw new Error(`Booking ${id} not found.`);
+      if (!confirmedBooking) {
+        showToast("Booking not found");
+        return;
+      }
 
       await setBookingConfirmed(id);
       
-      // Create action log for confirmation
       if (currentUser) {
         const actionLogData = {
           action: 'confirming booking',
@@ -95,7 +110,6 @@ export default function UpcomingBookingsTable() {
           entityId: id,
           entityType: 'booking'
         };
-        console.log('Sending confirmation action log data:', actionLogData);
         await createActionLog(actionLogData);
       }
 
@@ -114,7 +128,6 @@ export default function UpcomingBookingsTable() {
 
       await createPaiment(paimentData);
       
-      // Create action log for payment creation
       if (currentUser) {
         const paymentActionLogData = {
           action: 'created payment',
@@ -123,7 +136,6 @@ export default function UpcomingBookingsTable() {
           entityId: confirmedBooking._id,
           entityType: 'payment'
         };
-        console.log('Sending payment action log data:', paymentActionLogData);
         await createActionLog(paymentActionLogData);
       }
 
@@ -133,9 +145,10 @@ export default function UpcomingBookingsTable() {
       });
 
       setBookings((prev) => prev.filter((booking) => booking._id !== id));
-      alert(`Booking ${id} confirmed successfully.`);
+      showToast("Booking confirmed successfully");
     } catch (error) {
       console.error("Error confirming booking:", error);
+      showToast("Error confirming booking");
     }
   };
 
@@ -243,6 +256,15 @@ export default function UpcomingBookingsTable() {
         </div>
       )}
 
+      {toastMessage && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <Toast
+            message={toastMessage}
+            onClose={() => setToastMessage(null)}
+          />
+        </div>
+      )}
+      
       {selectedBookingId && (
         <Modal onClose={() => setSelectedBookingId(null)}>
           <BookingDetails bookingId={selectedBookingId} />
