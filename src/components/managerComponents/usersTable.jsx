@@ -1,5 +1,85 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { getUsers, archiveMember, setMemberToManagerRole } from "../../ApiCalls/apiCalls";
+
+function UserRow({ user, onDelete, onAssignManager }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <tr
+      key={user._id}
+      className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
+    >
+      <th
+        scope="row"
+        className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+      >
+        <img
+          className="w-10 h-10 rounded-full"
+          src={user?.photo ? `http://localhost:5000/${user.photo}` : 'http://localhost:5000/uploads/placeholder.jpg'}
+        />
+        <div className="ps-3">
+          <div className="text-base font-semibold">{user.name}</div>
+          <div className="font-normal text-gray-500">{user.email}</div>
+        </div>
+      </th>
+      <td className="px-6 py-4 border-b">{user.email}</td>
+      <td className="px-6 py-4 border-b">{user.phone}</td>
+      <td className="px-6 py-4 border-b">
+        {user.behaviourScore && (
+          <div className="flex flex-col">
+            <span>Total Score: {user.behaviourScore.totalScore}</span>
+            <span>No Shows: {user.behaviourScore.noShows}</span>
+            <span>Past Bookings: {user.behaviourScore.pastBookings}</span>
+            <span>Violations: {user.behaviourScore.violations}</span>
+          </div>
+        )}
+      </td>
+      <td className="text-right">
+        <div className="relative inline-block" ref={menuRef}>
+          <button
+            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+              <circle cx="4" cy="10" r="2" />
+              <circle cx="10" cy="10" r="2" />
+              <circle cx="16" cy="10" r="2" />
+            </svg>
+          </button>
+          {menuOpen && (
+            <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10">
+              <button
+                className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={() => { setMenuOpen(false); onDelete(user); }}
+              >
+                Delete
+              </button>
+              <button
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={() => { setMenuOpen(false); onAssignManager(user); }}
+              >
+                Assign Manager
+              </button>
+            </div>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
+}
 
 export function TableCard() {
   const [users, setUsers] = useState([]);
@@ -134,52 +214,12 @@ export function TableCard() {
           </thead>
           <tbody>
             {users.slice(0, visibleCount).map((user) => (
-              <tr
+              <UserRow
                 key={user._id}
-                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
-              >
-                <th
-                  scope="row"
-                  className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
-                >
-                  <img
-                    className="w-10 h-10 rounded-full"
-                    src={user?.photo ? `http://localhost:5000/${user.photo}` : 'http://localhost:5000/uploads/placeholder.jpg'}
-                  />
-                  <div className="ps-3">
-                    <div className="text-base font-semibold">{user.name}</div>
-                    <div className="font-normal text-gray-500">{user.email}</div>
-                  </div>
-                </th>
-                <td className="px-6 py-4 border-b">{user.email}</td>
-                <td className="px-6 py-4 border-b">{user.phone}</td>
-                <td className="px-6 py-4 border-b">
-                  {user.behaviourScore && (
-                    <div className="flex flex-col">
-                      <span>Total Score: {user.behaviourScore.totalScore}</span>
-                      <span>No Shows: {user.behaviourScore.noShows}</span>
-                      <span>Past Bookings: {user.behaviourScore.pastBookings}</span>
-                      <span>Violations: {user.behaviourScore.violations}</span>
-                    </div>
-                  )}
-                </td>
-                <td className="px-6 py-4 border-b">
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleDelete(user._id)}
-                      className="px-2 py-1 text-white bg-red-600 rounded hover:bg-red-700"
-                    >
-                      Delete
-                    </button>
-                    <button
-                      onClick={() => handleAssignManager(user._id)}
-                      className="px-2 py-1 text-white bg-green-600 rounded hover:bg-green-700"
-                    >
-                      Assign Manager
-                    </button>
-                  </div>
-                </td>
-              </tr>
+                user={user}
+                onDelete={handleDelete}
+                onAssignManager={handleAssignManager}
+              />
             ))}
           </tbody>
         </table>

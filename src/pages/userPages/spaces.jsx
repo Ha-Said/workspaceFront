@@ -1,157 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { getAllWorkspaces } from "../../ApiCalls/apiCalls";
 import { SpaceModal } from "../../components/userComponents/spaceModal";
-
-// Filter Popup Component
-function FilterPopup({
-  isOpen,
-  onClose,
-  onApply,
-  priceFilter,
-  capacityFilter,
-  dateFilter,
-  startTimeFilter,
-  endTimeFilter,
-  setPriceFilter,
-  setCapacityFilter,
-  setDateFilter,
-  setStartTimeFilter,
-  setEndTimeFilter,
-}) {
-  const popupRef = useRef(null);
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (popupRef.current && !popupRef.current.contains(event.target)) {
-        onClose();
-      }
-    }
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
-
-  return (
-    <div
-      ref={popupRef}
-      className="absolute z-10 w-80 p-6 bg-white rounded-lg shadow-xl dark:bg-gray-800 mt-10 border border-gray-300 dark:border-gray-700"
-    >
-      <div className="flex items-center justify-between mb-4">
-        <h6 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Filters
-        </h6>
-        <button
-          type="button"
-          className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-          onClick={onClose}
-        >
-          <svg
-            className="w-3 h-3"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 14 14"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-            />
-          </svg>
-          <span className="sr-only">Close filters</span>
-        </button>
-      </div>
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Max Price (DT)
-          </label>
-          <input
-            type="number"
-            placeholder="Enter max price"
-            value={priceFilter}
-            onChange={(e) => setPriceFilter(e.target.value)}
-            className="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded focus:ring-primary-500 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Min Capacity
-          </label>
-          <input
-            type="number"
-            placeholder="Enter min capacity"
-            value={capacityFilter}
-            onChange={(e) => setCapacityFilter(e.target.value)}
-            className="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded focus:ring-primary-500 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Date
-          </label>
-          <input
-            type="date"
-            value={dateFilter}
-            onChange={(e) => setDateFilter(e.target.value)}
-            className="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded focus:ring-primary-500 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Start Time
-            </label>
-            <input
-              type="time"
-              value={startTimeFilter}
-              onChange={(e) => setStartTimeFilter(e.target.value)}
-              className="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded focus:ring-primary-500 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              End Time
-            </label>
-            <input
-              type="time"
-              value={endTimeFilter}
-              onChange={(e) => setEndTimeFilter(e.target.value)}
-              className="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded focus:ring-primary-500 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            />
-          </div>
-        </div>
-        <div className="flex justify-between mt-4">
-          <button
-            onClick={() => {
-              setPriceFilter("");
-              setCapacityFilter("");
-              setDateFilter("");
-              setStartTimeFilter("");
-              setEndTimeFilter("");
-            }}
-            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-          >
-            Reset
-          </button>
-          <button
-            onClick={onApply}
-            className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
-          >
-            Apply
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function UserSpaces() {
   const [workspaces, setWorkspaces] = useState([]);
@@ -164,7 +13,6 @@ export default function UserSpaces() {
   const [dateFilter, setDateFilter] = useState('');
   const [startTimeFilter, setStartTimeFilter] = useState('');
   const [endTimeFilter, setEndTimeFilter] = useState('');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     getAllWorkspaces()
@@ -238,10 +86,6 @@ export default function UserSpaces() {
     return true;
   };
 
-  const filterWorkspaces = () => {
-    setIsDropdownOpen(false);
-  };
-
   const filteredWorkspaces = workspaces.filter(workspace => {
     const matchesSearch = workspace.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          workspace.location.toLowerCase().includes(searchQuery.toLowerCase());
@@ -287,42 +131,6 @@ export default function UserSpaces() {
               </option>
             ))}
           </select>
-          
-          {/* Filter Button and Popup */}
-          <div className="relative">
-            <button
-              onClick={() => setIsDropdownOpen((prev) => !prev)}
-              className="block w-full md:w-auto px-4 py-2 bg-primary-700 text-white font-medium rounded-lg hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-              type="button"
-            >
-              More Filters
-              <svg
-                className="w-4 h-4 ml-2 inline"
-                aria-hidden="true"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-              </svg>
-            </button>
-            <FilterPopup
-              isOpen={isDropdownOpen}
-              onClose={() => setIsDropdownOpen(false)}
-              onApply={filterWorkspaces}
-              priceFilter={priceFilter}
-              capacityFilter={capacityFilter}
-              dateFilter={dateFilter}
-              startTimeFilter={startTimeFilter}
-              endTimeFilter={endTimeFilter}
-              setPriceFilter={setPriceFilter}
-              setCapacityFilter={setCapacityFilter}
-              setDateFilter={setDateFilter}
-              setStartTimeFilter={setStartTimeFilter}
-              setEndTimeFilter={setEndTimeFilter}
-            />
-          </div>
         </div>
       </div>
 

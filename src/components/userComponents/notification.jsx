@@ -86,15 +86,17 @@ const NotificationComponent = ({ userId }) => {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-50 max-h-80 overflow-y-auto">
           {notifications.length > 0 ? (
-            notifications.map((notification) => (
-              <div 
-                key={notification._id} 
-                className={`p-2 border-b last:border-none ${notification.isRead ? 'bg-gray-50' : 'bg-white'}`}
-              >
-                <h4 className="text-sm font-bold">{notification.title}</h4>
-                <p className="text-xs text-gray-600">{notification.message}</p>
-              </div>
-            ))
+            notifications
+              .slice(0, 3) // Only display the 3 most recent notifications
+              .map((notification) => (
+                <div 
+                  key={notification._id} 
+                  className={`p-2 border-b last:border-none ${notification.isRead ? 'bg-gray-50' : 'bg-white'}`}
+                >
+                  <h4 className="text-sm font-bold">{notification.title}</h4>
+                  <p className="text-xs text-gray-600">{notification.message}</p>
+                </div>
+              ))
           ) : (
             <div className="p-2 text-center text-gray-500">No notifications</div>
           )}

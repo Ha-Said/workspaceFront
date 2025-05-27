@@ -15,8 +15,8 @@ export default function Landing() {
           <nav className="flex items-center justify-between py-6">
             <div className="flex items-center">
               <a href="#" className="flex items-center space-x-2">
-                <span className="text-3xl font-bold text-white">Rain</span>
-                <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">blur</span>
+                <span className="text-3xl font-bold text-white">Flow</span>
+                <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Space</span>
               </a>
             </div>
             <div className="flex items-center space-x-4">

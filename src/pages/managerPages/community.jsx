@@ -1,6 +1,23 @@
+import { useState, useRef, useEffect } from 'react';
 import { TableCard } from '../../components/managerComponents/usersTable';
 
 export default function Community() {
+    const [menuOpen, setMenuOpen] = useState(false);
+    const menuRef = useRef(null);
+
+    // Close menu when clicking outside
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setMenuOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-8">
@@ -25,15 +42,36 @@ export default function Community() {
                             placeholder="Search members..."
                         />
                     </div>
-                    <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                        Add Member
-                    </button>
+                    {/* 3-dot menu button */}
+                    <div className="relative" ref={menuRef}>
+                        <button
+                            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
+                            onClick={() => setMenuOpen((open) => !open)}
+                        >
+                            <svg className="w-6 h-6 text-gray-600 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                <circle cx="4" cy="10" r="2" />
+                                <circle cx="10" cy="10" r="2" />
+                                <circle cx="16" cy="10" r="2" />
+                            </svg>
+                        </button>
+                        {menuOpen && (
+                            <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10">
+                                <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    Invite Member
+                                </button>
+                                <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    Export Members
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
                 <div className="p-6">
-                    <TableCard />
+                    {/* Pass filter prop to only show Member role */}
+                    <TableCard roleFilter="Member" />
                 </div>
             </div>
         </div>

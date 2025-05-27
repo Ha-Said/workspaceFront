@@ -103,7 +103,7 @@ export default function UserCalendar() {
       },
     },
   });
-  calendar.setTheme('dark');
+  calendar.setTheme('light');
 
   useEffect(() => {
     eventsService.getAll();
