@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { isTokenExpired, clearAuthData } from '../utils/auth';
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -8,6 +9,14 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check for expired token on component mount
+    const token = localStorage.getItem('token');
+    if (token && isTokenExpired(token)) {
+      clearAuthData();
+    }
+  }, []);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -24,15 +33,18 @@ export default function LoginPage() {
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
-      if (response.data.user.role === "owner") {
-        navigate("/schedule");
+      // Redirect based on role
+      if (response.data.user.role === "Manager") {
+        navigate("/manager");
       } else if (response.data.user.role === "Member") {
         navigate("/user");
       } else {
-        setError("Invalid user role.");
+        setError("Invalid user role. Please contact support.");
+        clearAuthData(); // Clear invalid role data
       }
     } catch (error) {
       setError(error.response?.data?.message || "Login failed. Please try again.");
+      clearAuthData(); // Clear data on login failure
     } finally {
       setIsLoading(false);
     }

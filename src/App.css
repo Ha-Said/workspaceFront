@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-:root {/* Subtle linear gradient with closely related blues/purples */
+:root {
   background: #111827;
 
   --sx-color-primary: #d4d2d8;
